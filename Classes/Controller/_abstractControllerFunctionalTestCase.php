@@ -103,7 +103,7 @@ abstract class _abstractControllerFunctionalTestCase extends _abstractFunctional
         $this->withDatabaseSnapshot(/**
          * @throws Exception
          */ function () {
-             // TODO: make this cummunity independent
+            // TODO: make this cummunity independent
             $this->importDataSet('EXT:scoutnet_community/Tests/Functional/Fixtures/DatabaseRecords/Base.xml');
             $this->setupDatabase();
         });
@@ -264,7 +264,7 @@ abstract class _abstractControllerFunctionalTestCase extends _abstractFunctional
                     if (str_starts_with($redirect_to, 'regex:')) {
                         self::assertMatchesRegularExpression('#^location: ' . substr($redirect_to, 6) . '#', $header);
                     } elseif (str_starts_with($redirect_to, 'url:')) {
-                        self::assertEquals('location: '.substr($redirect_to, 4), $header);
+                        self::assertEquals('location: ' . substr($redirect_to, 4), $header);
                     } else {
                         self::assertMatchesRegularExpression('#^location: (http|https)://localhost/[?]' . $this->parameterPrefix . '%5Baction%5D=' . $redirect_to . '&' . $this->parameterPrefix . '%5Bcontroller%5D=' . $this->controller . '&.*#', $header);
                     }
