@@ -5,7 +5,7 @@
             "url": "https://repo.scoutnet.de/"
         }
     ],
-    "name": "scoutnet/scoutnet-testing-tools",
+    "name": "scoutnet/testing-tools",
     "description" : "Tesing Extensions for Typo3 testing",
     "homepage": "https://github.com/scoutnet/typo3.testing-tools",
     "authors": [
