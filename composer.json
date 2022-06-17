@@ -1,0 +1,70 @@
+{
+    "repositories": [
+        {
+            "type": "composer",
+            "url": "https://repo.scoutnet.de/"
+        }
+    ],
+    "name": "scoutnet/scoutnet-testing-tools",
+    "description" : "Tesing Extensions for Typo3 testing",
+    "homepage": "https://github.com/scoutnet/typo3.testing-tools",
+    "authors": [
+        {
+            "name": "Stefan Horst",
+            "email": "muetze@scoutnet.de",
+            "homepage": "https://www.scoutnet.de",
+            "role": "Developer"
+        }
+    ],
+    "license": ["GPL-2.0-or-later"],
+    "keywords": ["TYPO3 CMS", "ScoutNet", "Pfadfinder"],
+    "support": {
+        "issues": "https://github.com/scoutnet/typo3.testing-tools/issues"
+    },
+    "require": {
+        "php": ">= 7.2",
+        "ext-json": "*",
+        "typo3/testing-framework": "^6.16"
+    },
+    "config": {
+        "vendor-dir": ".Build/vendor",
+        "bin-dir": ".Build/bin",
+        "allow-plugins": {
+            "composer/package-versions-deprecated": true,
+            "typo3/cms-composer-installers": true,
+            "typo3/class-alias-loader": true
+        }
+    },
+    "require-dev": {
+        "roave/security-advisories": "dev-latest",
+        "typo3/coding-standards": "^0.5.0",
+        "phpstan/phpstan": "^1.7.0",
+        "phpstan/phpstan-phpunit": "^1.1.1",
+        "phpspec/prophecy": "~1.0",
+        "codeception/codeception": "^4.1",
+        "codeception/module-webdriver": "^1.0",
+        "codeception/module-asserts": "^1.2"
+    },
+    "autoload": {
+        "psr-4": {
+            "ScoutNet\\TestingTools\\": "Classes/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "ScoutNet\\TestingTools\\Tests\\": "Tests"
+        }
+    },
+    "extra": {
+        "branch-alias": {
+            "dev-master": "1.x-dev"
+        },
+        "typo3/cms": {
+            "app-dir": ".Build",
+            "cms-package-dir": "{$vendor-dir}/typo3/cms",
+            "web-dir": ".Build/Web",
+            "extension-key": "scoutnet_testingTool",
+            "composer-mode": false
+        }
+    }
+}
