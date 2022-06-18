@@ -103,7 +103,7 @@ stepMajorVersion:
 	@git add ext_emconf.php && git commit -m "new Version $(NEXTMAJORVERSION)"
 	@echo "* Start Development of the new Version: $(NEXTMAJORVERSION). After feature freeze, use make tag to tag this release"
 
-tag:
+tag: test
 	@if [ ! -n "$$(git tag -l $(EXT_VERSION))" ]; then git tag -a $(EXT_VERSION); fi
 	@echo You can now use git push --tags to push all changes to github
 	@echo To step development Version use make stepPatchVersion, make stepMinorVersion or make stepMajorVersion

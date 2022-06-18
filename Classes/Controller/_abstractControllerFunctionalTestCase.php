@@ -61,6 +61,8 @@ abstract class _abstractControllerFunctionalTestCase extends _abstractFunctional
 
     protected string $parameterPrefix;
     protected string $controller;
+    protected int $pluginPid = self::PAGE_USER_CONTROLLER;
+    protected string $pluginPageTitle = 'Controller';
 
     public static array $headers = [];
 
@@ -214,8 +216,9 @@ abstract class _abstractControllerFunctionalTestCase extends _abstractFunctional
     {
         self::$headers = [];
 
+        // TODO: create possibility to use 'url:' as action
         $queryParameter = [
-            'id' => self::PAGE_USER_CONTROLLER,
+            'id' => $this->pluginPid,
             $this->parameterPrefix . '[action]' => $action,
             $this->parameterPrefix . '[controller]' => $this->controller,
         ];
@@ -253,7 +256,7 @@ abstract class _abstractControllerFunctionalTestCase extends _abstractFunctional
         } elseif ($redirect_to === '403') {
             self::assertContains('HTTP/1.1 403 Forbidden', self::$headers);
         } else {
-            self::assertMatchesRegularExpression('#<title>Controller</title>#', $content);
+            self::assertMatchesRegularExpression('#<title>' . $this->pluginPageTitle . '</title>#', $content);
             self::assertContains('HTTP/1.1 303 See Other', self::$headers);
 
             // check location header
