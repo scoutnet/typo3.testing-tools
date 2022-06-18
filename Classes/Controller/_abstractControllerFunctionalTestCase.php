@@ -181,13 +181,14 @@ abstract class _abstractControllerFunctionalTestCase extends _abstractFunctional
     }
 
     /**
-     * @param string      $url_part
-     * @param array       $queryParameters
+     * @param string $url_part
+     * @param array $queryParameters
      * @param string|null $body
+     * @param int|null $user
      *
      * @return InternalResponse
      */
-    protected function callFrontendUrl(string $url_part, array $queryParameters = [], ?string $body = null): InternalResponse
+    protected function callFrontendUrl(string $url_part, array $queryParameters = [], ?string $body = null, ?int $user = null): InternalResponse
     {
         // set encryptionKey for hmac to work
         $GLOBALS['TYPO3_CONF_VARS']['SYS']['encryptionKey'] = self::NOT_SO_SECRET_ENCRYPTION_KEY;
@@ -199,7 +200,12 @@ abstract class _abstractControllerFunctionalTestCase extends _abstractFunctional
             $req->getBody()->write($body);
         }
 
-        return $this->executeFrontendSubRequest($req);
+        $context = new InternalRequestContext();
+        if ($user !== null) {
+            $context = $context->withFrontendUserId($user);
+        }
+
+        return $this->executeFrontendSubRequest($req, $context);
     }
 
     /**
