@@ -15,6 +15,7 @@
 namespace ScoutNet\TestingTools\Controller;
 
 use GuzzleHttp\Psr7\Uri;
+use TYPO3\CMS\Core\Utility\GeneralUtility;
 use function ini_get;
 use JsonException;
 use PHPUnit\Util\PHP\AbstractPhpProcess;
@@ -106,8 +107,6 @@ abstract class _abstractControllerFunctionalTestCase extends _abstractFunctional
         $this->withDatabaseSnapshot(/**
          * @throws Exception
          */ function () {
-            // TODO: make this cummunity independent
-            $this->importDataSet('EXT:scoutnet_community/Tests/Functional/Fixtures/DatabaseRecords/Base.xml');
             $this->setupDatabase();
         });
     }
