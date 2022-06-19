@@ -15,7 +15,6 @@
 namespace ScoutNet\TestingTools\Controller;
 
 use GuzzleHttp\Psr7\Uri;
-use TYPO3\CMS\Core\Utility\GeneralUtility;
 use function ini_get;
 use JsonException;
 use PHPUnit\Util\PHP\AbstractPhpProcess;
