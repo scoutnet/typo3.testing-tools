@@ -72,6 +72,14 @@ abstract class _abstractFunctionalTestCase extends FunctionalTestCase
                 $testbase->initializeTestDatabaseAndTruncateTables($dbPathSqlite, $dbPathSqliteEmpty);
             }
             $testbase->loadExtensionTables();
+
+            // import static content
+            $schemaMigrationService = GeneralUtility::makeInstance(SchemaMigrator::class);
+            $sqlReader = GeneralUtility::makeInstance(SqlReader::class);
+            $sqlCode = $sqlReader->getTablesDefinitionString(true);
+
+            $insertStatements = $sqlReader->getInsertStatementArray($sqlCode);
+            $schemaMigrationService->importStaticData($insertStatements);
         } else {
             DatabaseSnapshot::initialize(dirname(self::getInstancePath()) . '/functional-sqlite-dbs/', $this->identifier);
             $testbase->removeOldInstanceIfExists($this->instancePath);
