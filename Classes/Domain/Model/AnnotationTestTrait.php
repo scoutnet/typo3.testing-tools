@@ -73,6 +73,7 @@ trait AnnotationTestTrait
         // load extbase Configuration
         $definedClasses = require '../Configuration/Extbase/Persistence/Classes.php';
         $tableName = $definedClasses[$this->testedClass]['tableName'];
+        $table_properties = $definedClasses[$this->testedClass]['properties']??[];
 
         // check if tableName is set
         $this->assertNotEmpty($tableName, 'unknown Tablename');
@@ -87,9 +88,15 @@ trait AnnotationTestTrait
 
         foreach ($o->getProperties() as $prop) {
             // TODO: maybe use Typo3 to check those
-            $tableColumnName = GeneralUtility::camelCaseToLowerCaseUnderscored($prop->getName());
+            // if we redefined the column name use this
+            $tableColumnName = $table_properties[$prop->getName()]['fieldName']??GeneralUtility::camelCaseToLowerCaseUnderscored($prop->getName());
 
             $tableConfig = $tcaTable['columns'][$tableColumnName]??[];
+
+            // TODO: reenable this Test!
+//            if (!isset($tableConfig['config'])) {
+//                $this->fail('Config not set for ' . $prop->getName());
+//            }
 
             // get type
             $type = null;
@@ -153,6 +160,14 @@ trait AnnotationTestTrait
                         if ($max !== null) {
                             $this->assertEquals($max, $tableConfig['config']['max'] ?? null, 'max value for ' . $prop->getName() . ' is wrong.');
                         }
+                    } elseif ($annotation->validator === 'Integer') {
+                        $this->assertStringContainsStringIgnoringCase('int', $tableConfig['config']['eval'] ?? '', $prop->getName() . ' needs to be int.');
+                    } elseif ($annotation->validator === 'Url') {
+                        $this->assertStringContainsStringIgnoringCase('domainname', $tableConfig['config']['eval'] ?? '', $prop->getName() . ' needs to be domainname.');
+                    } elseif ($annotation->validator === 'Float') {
+                        // TODO: find the correct validation here!!
+                    } elseif ($annotation->validator == 'EmailAddress') {
+                        $this->assertStringContainsStringIgnoringCase('email', $tableConfig['config']['eval'] ?? '', $prop->getName() . ' needs to be email.');
                     } elseif ($annotation->validator === 'NumberRange') {
                         $min = $annotation->options['minimum']??null;
                         $max = $annotation->options['maximum'] ?? null;
@@ -170,6 +185,10 @@ trait AnnotationTestTrait
                             $this->assertStringContainsStringIgnoringCase('required', $tableConfig['config']['eval'] ?? '', $prop->getName() . ' is required.');
                         } elseif ($tableConfig['config']['type'] === 'group') {
                             $this->assertEquals(1, $tableConfig['config']['minitems']??0, $prop->getName() . ' is required.');
+                        } elseif ($tableConfig['config']['type'] === 'select') {
+                            $this->assertEquals('selectSingle', $tableConfig['config']['renderType']??'', $prop->getName() . ': renderType needs to be selectSingle.');
+                            $this->assertEquals([], $tableConfig['config']['items']??[], $prop->getName() . ': items needs to be empty.'); // TODO: check, if this is allways the case
+                            $this->assertEquals('notSET_1641824444', $tableConfig['config']['default']??'notSET_1641824444', $prop->getName() . ': default must not be set!'); // TODO: check, if this is allways the case
                         } else {
                             // TODO: check that this is not empty for other items
                             print 'unhandled NotEmpty for type ' . $tableConfig['config']['type'] . LF;
