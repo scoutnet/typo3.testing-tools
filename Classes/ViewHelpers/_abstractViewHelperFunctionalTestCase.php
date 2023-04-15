@@ -17,7 +17,6 @@ namespace ScoutNet\TestingTools\ViewHelpers;
 use ScoutNet\TestingTools\_abstractFunctionalTestCase;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Fluid\View\StandaloneView;
-use TYPO3\TestingFramework\Core\Exception;
 
 abstract class _abstractViewHelperFunctionalTestCase extends _abstractFunctionalTestCase
 {
@@ -55,23 +54,12 @@ abstract class _abstractViewHelperFunctionalTestCase extends _abstractFunctional
     {
         parent::setUp();
 
-        $this->withDatabaseSnapshot(/**
-         * @throws Exception
-         */ function () {
-            $this->importDataSet('EXT:scoutnet_community/Tests/Functional/Fixtures/DatabaseRecords/Base.xml');
-            $this->importDataSet('EXT:scoutnet_community/Tests/Functional/Fixtures/DatabaseRecords/ContactController.xml');
-            $this->setUpFrontendRootPage(
-                1,
-                [
-                    'constants' => ['EXT:scoutnet_community/Tests/Functional/Fixtures/TypoScript/_BaseController.constants.typoscript'],
-                    'setup' => ['EXT:scoutnet_community/Tests/Functional/Fixtures/TypoScript/_BaseController.setup.typoscript'],
-                ],
-                [
-                    'include_static_file' => 'EXT:fluid_styled_content/Configuration/TypoScript/',
-                ]
-            );
+        $this->withDatabaseSnapshot(function () {
+            $this->setupDatabase();
         });
     }
+
+    abstract protected function setupDatabase(): void;
 
     /**
      * @return array
