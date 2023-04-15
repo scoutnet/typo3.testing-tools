@@ -268,6 +268,8 @@ abstract class _abstractControllerFunctionalTestCase extends _abstractFunctional
             }
         }
 
+        $queryParameter['cHash'] = $this->generateCHash($this->pluginPid, $queryParameter);
+
         // Send Request with correct user
         $request = (new InternalRequest())->withQueryParameters($queryParameter);
         $context = new InternalRequestContext();
