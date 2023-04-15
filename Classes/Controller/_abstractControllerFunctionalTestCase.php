@@ -22,6 +22,8 @@ use ScoutNet\TestingTools\_abstractFunctionalTestCase;
 use ScoutNet\TestingTools\Fixtures\TestMboxTransport;
 use SebastianBergmann\Environment\Runtime;
 use SebastianBergmann\Template\Template;
+use TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3\CMS\Frontend\Page\CacheHashCalculator;
 use TYPO3\TestingFramework\Core\Exception;
 use TYPO3\TestingFramework\Core\Functional\Framework\Frontend\InternalRequest;
 use TYPO3\TestingFramework\Core\Functional\Framework\Frontend\InternalRequestContext;
@@ -176,6 +178,25 @@ abstract class _abstractControllerFunctionalTestCase extends _abstractFunctional
                 $queryParameter[$prefix . '[' . $key . ']'] = $value;
             }
         }
+    }
+
+    /**
+     * @param int $pid
+     * @param array $parameters
+     * @return string
+     */
+    protected static function generateCHash(int $pid, array $parameters): string
+    {
+        $cacheHashCalculator = GeneralUtility::makeInstance(CacheHashCalculator::class);
+
+        $param = $parameters;
+        $param['encryptionKey'] = self::NOT_SO_SECRET_ENCRYPTION_KEY;
+        $param['id'] = $pid;
+
+        // sort by key
+        ksort($param);
+
+        return $cacheHashCalculator->calculateCacheHash(array_map('strval', $param));
     }
 
     /**
