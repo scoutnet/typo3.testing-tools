@@ -183,6 +183,8 @@ trait AnnotationTestTrait
                     } elseif ($annotation->validator === 'NotEmpty') {
                         if ($tableConfig['config']['type'] === 'input') {
                             $this->assertStringContainsStringIgnoringCase('required', $tableConfig['config']['eval'] ?? '', $prop->getName() . ' is required.');
+                        } elseif ($tableConfig['config']['type'] === 'text') {
+                            $this->assertStringContainsStringIgnoringCase('required', $tableConfig['config']['eval'] ?? '', $prop->getName() . ' is required.');
                         } elseif ($tableConfig['config']['type'] === 'group') {
                             $this->assertEquals(1, $tableConfig['config']['minitems']??0, $prop->getName() . ' is required.');
                         } elseif ($tableConfig['config']['type'] === 'select') {
@@ -191,12 +193,12 @@ trait AnnotationTestTrait
                             $this->assertEquals('notSET_1641824444', $tableConfig['config']['default']??'notSET_1641824444', $prop->getName() . ': default must not be set!'); // TODO: check, if this is allways the case
                         } else {
                             // TODO: check that this is not empty for other items
-                            print 'unhandled NotEmpty for type ' . $tableConfig['config']['type'] . LF;
+                            print 'unhandled NotEmpty for type ' . $tableConfig['config']['type'] . "\n";
                             /** @noinspection ForgottenDebugOutputInspection */
                             var_dump($tableConfig);
                         }
                     } else {
-                        print 'unhandled Validator' . LF;
+                        print 'unhandled Validator' . "\n";
                         /** @noinspection ForgottenDebugOutputInspection */
                         var_dump($annotation);
                     }
@@ -207,7 +209,7 @@ trait AnnotationTestTrait
                     // TODO: check if we can check those annotations
                 } else {
                     // TODO: break for unknown annotations
-                    print 'unknown annotation' . LF;
+                    print 'unknown annotation' . "\n";
                     /** @noinspection ForgottenDebugOutputInspection */
                     var_dump($annotation);
                 }
