@@ -231,7 +231,7 @@ abstract class _abstractControllerFunctionalTestCase extends _abstractFunctional
             if (strpos($header, ': ')) {
                 [$key, $value] = explode(': ', $header, 2);
                 $res = $res->withHeader($key, $value);
-            } else if (strpos($header, 'HTTP/') === 0) {
+            } elseif (strpos($header, 'HTTP/') === 0) {
                 $statusCode = explode(' ', $header)[1];
                 $reason = explode(' ', $header, 3)[2];
 
