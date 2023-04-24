@@ -224,7 +224,22 @@ abstract class _abstractControllerFunctionalTestCase extends _abstractFunctional
             $context = $context->withFrontendUserId($user);
         }
 
-        return $this->executeFrontendSubRequest($req, $context);
+        $res = $this->executeFrontendSubRequest($req, $context);
+
+        // Add Headers to response since typo3v11 is not filling those correctly
+        foreach (self::$headers as $header) {
+            if (strpos($header, ': ')) {
+                [$key, $value] = explode(': ', $header, 2);
+                $res = $res->withHeader($key, $value);
+            } else if (strpos($header, 'HTTP/') === 0) {
+                $statusCode = explode(' ', $header)[1];
+                $reason = explode(' ', $header, 3)[2];
+
+                $res = $res->withStatus($statusCode, $reason);
+            }
+        }
+
+        return $res;
     }
 
     /**
