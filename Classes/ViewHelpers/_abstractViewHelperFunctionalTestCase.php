@@ -39,15 +39,8 @@ abstract class _abstractViewHelperFunctionalTestCase extends _abstractFunctional
     /**
      * @var string[]
      */
-    protected array $additionalFoldersToCreate = [
-        'typo3conf/sites/test_site',
-    ];
-
-    /**
-     * @var string[]
-     */
     protected array $pathsToLinkInTestInstance = [
-        'typo3conf/ext/scoutnet_community/Tests/Functional/Fixtures/Frontend/Config/Sites/test_site/config.yaml' => 'typo3conf/sites/test_site/config.yaml', // so correct urls
+        'typo3conf/ext/scoutnet_community/Tests/Functional/Fixtures/Frontend/Config/Sites' => 'typo3conf/sites', // so correct urls
     ];
 
     protected function setUp(): void
