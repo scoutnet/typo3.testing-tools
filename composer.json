@@ -23,7 +23,7 @@
     },
     "require": {
         "ext-json": "*",
-        "typo3/testing-framework": "^6.16"
+        "typo3/testing-framework": "^6.16|^7.0"
     },
     "config": {
         "vendor-dir": ".Build/vendor",
@@ -58,7 +58,8 @@
     },
     "extra": {
         "branch-alias": {
-            "dev-master": "1.x-dev"
+            "dev-main": "2.x-dev",
+            "dev-typo3_v10": "1.x-dev"
         },
         "typo3/cms": {
             "app-dir": ".Build",
