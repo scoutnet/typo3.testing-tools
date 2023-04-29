@@ -23,14 +23,14 @@ abstract class _abstractViewHelperFunctionalTestCase extends _abstractFunctional
     protected string $viewHelper = '';
     protected string $subViewTemplate = '';
 
-    protected $coreExtensionsToLoad = [
+    protected array $coreExtensionsToLoad = [
         'extensionmanager', 'fluid_styled_content', 'frontend',
     ];
 
     /**
      * @var array Have extensions loaded
      */
-    protected $testExtensionsToLoad = [
+    protected array $testExtensionsToLoad = [
         'typo3conf/ext/scoutnet_structure',
         'typo3conf/ext/static_info_tables',
         'typo3conf/ext/scoutnet_community',
@@ -39,14 +39,14 @@ abstract class _abstractViewHelperFunctionalTestCase extends _abstractFunctional
     /**
      * @var string[]
      */
-    protected $additionalFoldersToCreate = [
+    protected array $additionalFoldersToCreate = [
         'typo3conf/sites/test_site',
     ];
 
     /**
      * @var string[]
      */
-    protected $pathsToLinkInTestInstance = [
+    protected array $pathsToLinkInTestInstance = [
         'typo3conf/ext/scoutnet_community/Tests/Functional/Fixtures/Frontend/Config/Sites/test_site/config.yaml' => 'typo3conf/sites/test_site/config.yaml', // so correct urls
     ];
 

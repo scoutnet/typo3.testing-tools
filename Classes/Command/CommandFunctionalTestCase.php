@@ -23,7 +23,7 @@ abstract class CommandFunctionalTestCase extends _abstractFunctionalTestCase
     /**
      * @var array<string, mixed>
      */
-    protected $configurationToUseInTestInstance = [
+    protected array $configurationToUseInTestInstance = [
         'FE' => [
             'lockIP' => 0,
         ],

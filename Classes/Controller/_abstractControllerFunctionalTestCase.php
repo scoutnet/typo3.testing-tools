@@ -72,7 +72,7 @@ abstract class _abstractControllerFunctionalTestCase extends _abstractFunctional
     /**
      * @var array<string, mixed>
      */
-    protected $configurationToUseInTestInstance = [
+    protected array $configurationToUseInTestInstance = [
         'FE' => [
             'lockIP' => 0,
         ],
