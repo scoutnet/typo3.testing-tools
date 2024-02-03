@@ -66,7 +66,7 @@
             "app-dir": ".Build",
             "cms-package-dir": "{$vendor-dir}/typo3/cms",
             "web-dir": ".Build/Web",
-            "extension-key": "scoutnet_testingTool",
+            "extension-key": "scoutnet_testing_tool",
             "composer-mode": false
         }
     }

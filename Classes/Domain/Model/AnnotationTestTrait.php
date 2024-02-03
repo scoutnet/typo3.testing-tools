@@ -94,9 +94,9 @@ trait AnnotationTestTrait
             $tableConfig = $tcaTable['columns'][$tableColumnName]??[];
 
             // TODO: reenable this Test!
-//            if (!isset($tableConfig['config'])) {
-//                $this->fail('Config not set for ' . $prop->getName());
-//            }
+            //            if (!isset($tableConfig['config'])) {
+            //                $this->fail('Config not set for ' . $prop->getName());
+            //            }
 
             // get type
             $type = null;
@@ -154,7 +154,7 @@ trait AnnotationTestTrait
                     $this->assertEquals($value, $test->$function());
                 } elseif ($annotation instanceof Validate) {
                     if ($annotation->validator === 'StringLength') {
-//                        $min = $annotation->options['minimum']??null;
+                        //                        $min = $annotation->options['minimum']??null;
                         $max = $annotation->options['maximum'] ?? null;
 
                         if ($max !== null) {
