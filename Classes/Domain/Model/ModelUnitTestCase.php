@@ -10,6 +10,7 @@ use TYPO3\TestingFramework\Core\Unit\UnitTestCase;
 
 abstract class ModelUnitTestCase extends UnitTestCase
 {
+    use AnnotationTestTrait;
     /**
      * @var AbstractEntity
      */
@@ -110,6 +111,4 @@ abstract class ModelUnitTestCase extends UnitTestCase
             }
         }
     }
-
-    use AnnotationTestTrait;
 }

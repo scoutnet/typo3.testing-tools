@@ -40,7 +40,7 @@ abstract class CommandFunctionalTestCase extends _abstractFunctionalTestCase
         // setup mbox file before the parent sets up the localconf.php
         $this->mboxPath = self::getInstancePath() . '/typo3temp/test.mbox';
         if (is_string($this->configurationToUseInTestInstance)) {
-            $this->configurationToUseInTestInstance=[
+            $this->configurationToUseInTestInstance = [
                 'FE' => [
                     'lockIP' => 0,
                 ],

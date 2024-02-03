@@ -15,7 +15,9 @@
 namespace ScoutNet\TestingTools\Controller;
 
 use GuzzleHttp\Psr7\Uri;
+
 use function ini_get;
+
 use JsonException;
 use PHPUnit\Util\PHP\AbstractPhpProcess;
 use ScoutNet\TestingTools\_abstractFunctionalTestCase;
@@ -92,7 +94,7 @@ abstract class _abstractControllerFunctionalTestCase extends _abstractFunctional
         // setup mbox file before the parent sets up the localconf.php
         $this->mboxPath = self::getInstancePath() . '/typo3temp/test.mbox';
         if (is_string($this->configurationToUseInTestInstance)) {
-            $this->configurationToUseInTestInstance=[
+            $this->configurationToUseInTestInstance = [
                 'FE' => [
                     'lockIP' => 0,
                 ],
@@ -131,7 +133,7 @@ abstract class _abstractControllerFunctionalTestCase extends _abstractFunctional
             'context' => json_encode($context, JSON_THROW_ON_ERROR),
         ];
 
-        if ($_SERVER['XDEBUG_CONFIG']??'') {
+        if ($_SERVER['XDEBUG_CONFIG'] ?? '') {
             $arguments['xdebug_config'] = $_SERVER['XDEBUG_CONFIG'];
         }
 
@@ -171,7 +173,7 @@ abstract class _abstractControllerFunctionalTestCase extends _abstractFunctional
 
     protected static function addQueryParameter(&$queryParameter, $parameter, $prefix): void
     {
-        foreach ($parameter as $key=>$value) {
+        foreach ($parameter as $key => $value) {
             if (is_array($value)) {
                 self::addQueryParameter($queryParameter, $value, $prefix . '[' . $key . ']');
             } else {
@@ -231,7 +233,7 @@ abstract class _abstractControllerFunctionalTestCase extends _abstractFunctional
             if (strpos($header, ': ')) {
                 [$key, $value] = explode(': ', $header, 2);
                 $res = $res->withHeader($key, $value);
-            } elseif (strpos($header, 'HTTP/') === 0) {
+            } elseif (str_starts_with($header, 'HTTP/')) {
                 $statusCode = explode(' ', $header)[1];
                 $reason = explode(' ', $header, 3)[2];
 
@@ -264,7 +266,7 @@ abstract class _abstractControllerFunctionalTestCase extends _abstractFunctional
             $this->parameterPrefix . '[controller]' => $this->controller,
         ];
 
-        foreach ($parameter as $key=>$value) {
+        foreach ($parameter as $key => $value) {
             if (is_array($value)) {
                 foreach ($value as $k => $v) {
                     $queryParameter[$this->parameterPrefix . '[' . $key . '][' . $k . ']'] = $v;
@@ -273,7 +275,7 @@ abstract class _abstractControllerFunctionalTestCase extends _abstractFunctional
                 $queryParameter[$this->parameterPrefix . '[' . $key . ']'] = $value;
             }
         }
-        foreach ($raw_parameter as $key=>$value) {
+        foreach ($raw_parameter as $key => $value) {
             if (is_array($value)) {
                 foreach ($value as $k => $v) {
                     $queryParameter[$key . '[' . $k . ']'] = $v;

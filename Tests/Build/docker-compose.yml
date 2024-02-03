@@ -1,6 +1,6 @@
 # This file is a generic Scoutnet docker-compose.yml file. The original is found in the dummy extension
 # https://github.com/scoutnet/plugins.typo3.scoutnet_dummy/blob/master/Tests/Build/docker-compose.yml
-# DOCKER_COMPOSE Version: 1.0.4
+# DOCKER_COMPOSE Version: 1.0.6
 
 version: '2.3'
 services:
@@ -104,6 +104,8 @@ services:
     - /etc/group:/etc/group:ro
     - /tmp/.composer:/.composer
     - ${HOST_HOME}/.composer/auth.json:/.composer/auth.json:ro
+    - /tmp/.cache:/.cache
+    - /tmp/.npm:/.npm
     extra_hosts:
     - "repo.scoutnet.de:${REPO_IP}"
     - "www.scoutnet.de:${WWW_IP}"
@@ -126,6 +128,8 @@ services:
     - /etc/group:/etc/group:ro
     - /tmp/.composer:/.composer
     - ${HOST_HOME}/.composer/auth.json:/.composer/auth.json:ro
+    - /tmp/.cache:/.cache
+    - /tmp/.npm:/.npm
     extra_hosts:
     - "repo.scoutnet.de:${REPO_IP}"
     - "www.scoutnet.de:${WWW_IP}"
@@ -148,6 +152,8 @@ services:
     - /etc/group:/etc/group:ro
     - /tmp/.composer:/.composer
     - ${HOST_HOME}/.composer/auth.json:/.composer/auth.json:ro
+    - /tmp/.cache:/.cache
+    - /tmp/.npm:/.npm
     extra_hosts:
     - "repo.scoutnet.de:${REPO_IP}"
     - "www.scoutnet.de:${WWW_IP}"

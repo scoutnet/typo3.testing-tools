@@ -22,7 +22,5 @@ class DataMapperMock extends DataMapper
     /**
      * ignore parent Constructor
      */
-    public function __construct()
-    {
-    }
+    public function __construct() {}
 }

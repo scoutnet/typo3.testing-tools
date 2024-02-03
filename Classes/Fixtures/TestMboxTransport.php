@@ -43,7 +43,7 @@ class TestMboxTransport extends AbstractTransport
     {
         parent::__construct();
 
-        $mboxFile = $mailSettings['transport_mbox_file']??'';
+        $mboxFile = $mailSettings['transport_mbox_file'] ?? '';
         if ($mboxFile === '') {
             throw new Exception('$GLOBALS[\'TYPO3_CONF_VARS\'][\'MAIL\'][\'transport_mbox_file\'] needs to be set when transport is set to "this transport".', 1294586645);
         }

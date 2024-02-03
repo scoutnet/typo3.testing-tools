@@ -51,7 +51,7 @@ trait AnnotationTestTrait
                 }
                 if ($correct_namespace && str_starts_with(mb_strtolower(trim($line)), 'use')) {
                     $class = trim(preg_replace('/.*use ([^;]*);.*/', '\1', $line));
-                    if (strpos($class, '\\') !== false) {
+                    if (str_contains($class, '\\')) {
                         $short_name = substr($class, strrpos($class, '\\') + 1);
                     } else {
                         $short_name = $class;
@@ -73,7 +73,7 @@ trait AnnotationTestTrait
         // load extbase Configuration
         $definedClasses = require '../Configuration/Extbase/Persistence/Classes.php';
         $tableName = $definedClasses[$this->testedClass]['tableName'];
-        $table_properties = $definedClasses[$this->testedClass]['properties']??[];
+        $table_properties = $definedClasses[$this->testedClass]['properties'] ?? [];
 
         // check if tableName is set
         $this->assertNotEmpty($tableName, 'unknown Tablename');
@@ -89,14 +89,14 @@ trait AnnotationTestTrait
         foreach ($o->getProperties() as $prop) {
             // TODO: maybe use Typo3 to check those
             // if we redefined the column name use this
-            $tableColumnName = $table_properties[$prop->getName()]['fieldName']??GeneralUtility::camelCaseToLowerCaseUnderscored($prop->getName());
+            $tableColumnName = $table_properties[$prop->getName()]['fieldName'] ?? GeneralUtility::camelCaseToLowerCaseUnderscored($prop->getName());
 
-            $tableConfig = $tcaTable['columns'][$tableColumnName]??[];
+            $tableConfig = $tcaTable['columns'][$tableColumnName] ?? [];
 
             // TODO: reenable this Test!
-//            if (!isset($tableConfig['config'])) {
-//                $this->fail('Config not set for ' . $prop->getName());
-//            }
+            //            if (!isset($tableConfig['config'])) {
+            //                $this->fail('Config not set for ' . $prop->getName());
+            //            }
 
             // get type
             $type = null;
@@ -118,7 +118,7 @@ trait AnnotationTestTrait
                     $all_types = explode('|', $type);
 
                     // add namespace from use statements
-                    $all_types = array_map(static function ($class) use ($use_statements, $o) {return $use_statements[$class]??(str_contains($class, '\\')?$class:$o->getNamespaceName() . '\\' . $class);}, $all_types);
+                    $all_types = array_map(static function ($class) use ($use_statements, $o) {return $use_statements[$class] ?? (str_contains($class, '\\') ? $class : $o->getNamespaceName() . '\\' . $class);}, $all_types);
 
                     // check, that all types exists
                     foreach ($all_types as $class) {
@@ -154,7 +154,7 @@ trait AnnotationTestTrait
                     $this->assertEquals($value, $test->$function());
                 } elseif ($annotation instanceof Validate) {
                     if ($annotation->validator === 'StringLength') {
-//                        $min = $annotation->options['minimum']??null;
+                        //                        $min = $annotation->options['minimum']??null;
                         $max = $annotation->options['maximum'] ?? null;
 
                         if ($max !== null) {
@@ -169,7 +169,7 @@ trait AnnotationTestTrait
                     } elseif ($annotation->validator == 'EmailAddress') {
                         $this->assertStringContainsStringIgnoringCase('email', $tableConfig['config']['eval'] ?? '', $prop->getName() . ' needs to be email.');
                     } elseif ($annotation->validator === 'NumberRange') {
-                        $min = $annotation->options['minimum']??null;
+                        $min = $annotation->options['minimum'] ?? null;
                         $max = $annotation->options['maximum'] ?? null;
 
                         $this->assertStringContainsStringIgnoringCase('int', $tableConfig['config']['eval'] ?? '', $prop->getName() . ' needs to be int.');
@@ -186,11 +186,11 @@ trait AnnotationTestTrait
                         } elseif ($tableConfig['config']['type'] === 'text') {
                             $this->assertStringContainsStringIgnoringCase('required', $tableConfig['config']['eval'] ?? '', $prop->getName() . ' is required.');
                         } elseif ($tableConfig['config']['type'] === 'group') {
-                            $this->assertEquals(1, $tableConfig['config']['minitems']??0, $prop->getName() . ' is required.');
+                            $this->assertEquals(1, $tableConfig['config']['minitems'] ?? 0, $prop->getName() . ' is required.');
                         } elseif ($tableConfig['config']['type'] === 'select') {
-                            $this->assertEquals('selectSingle', $tableConfig['config']['renderType']??'', $prop->getName() . ': renderType needs to be selectSingle.');
-                            $this->assertEquals([], $tableConfig['config']['items']??[], $prop->getName() . ': items needs to be empty.'); // TODO: check, if this is allways the case
-                            $this->assertEquals('notSET_1641824444', $tableConfig['config']['default']??'notSET_1641824444', $prop->getName() . ': default must not be set!'); // TODO: check, if this is allways the case
+                            $this->assertEquals('selectSingle', $tableConfig['config']['renderType'] ?? '', $prop->getName() . ': renderType needs to be selectSingle.');
+                            $this->assertEquals([], $tableConfig['config']['items'] ?? [], $prop->getName() . ': items needs to be empty.'); // TODO: check, if this is allways the case
+                            $this->assertEquals('notSET_1641824444', $tableConfig['config']['default'] ?? 'notSET_1641824444', $prop->getName() . ': default must not be set!'); // TODO: check, if this is allways the case
                         } else {
                             // TODO: check that this is not empty for other items
                             print 'unhandled NotEmpty for type ' . $tableConfig['config']['type'] . "\n";
