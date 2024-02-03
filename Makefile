@@ -202,7 +202,7 @@ composerInstall: $(TEST_ROOT_FOLDER)/docker-php81-composer/.env $(TEST_ROOT_FOLD
 	# Create Link for functional tests to work properly they expect to have the vendor directory in the web directory
 	@ln -fs ../vendor .Build/Web
 	@mkdir -p .Build/Web/typo3conf/ext
-	@ln -s ../../../../ .Build/Web/typo3conf/ext/$(EXT_NAME)
+	@test -L .Build/Web/typo3conf/ext/$(EXT_NAME) || ln -s ../../../../ .Build/Web/typo3conf/ext/$(EXT_NAME)
 
 
 .PHONY: composerUpdate
