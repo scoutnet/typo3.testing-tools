@@ -20,10 +20,13 @@ use function ini_get;
 
 use JsonException;
 use PHPUnit\Util\PHP\AbstractPhpProcess;
+
+use Psr\Http\Message\ResponseInterface;
 use ScoutNet\TestingTools\_abstractFunctionalTestCase;
 use ScoutNet\TestingTools\Fixtures\TestMboxTransport;
 use SebastianBergmann\Environment\Runtime;
 use SebastianBergmann\Template\Template;
+use TYPO3\CMS\Core\Http\Response;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Frontend\Page\CacheHashCalculator;
 use TYPO3\TestingFramework\Core\Exception;
@@ -169,7 +172,7 @@ abstract class _abstractControllerFunctionalTestCase extends _abstractFunctional
         return '#<meta http-equiv="refresh" content="0;url=.*id=' . $pid . '"/>#';
     }
 
-    abstract public function dataProviderRedirect(): array;
+    abstract public static function dataProviderRedirect(): array;
 
     protected static function addQueryParameter(&$queryParameter, $parameter, $prefix): void
     {
@@ -209,7 +212,7 @@ abstract class _abstractControllerFunctionalTestCase extends _abstractFunctional
      *
      * @return InternalResponse
      */
-    protected function callFrontendUrl(string $url_part, array $queryParameters = [], ?string $body = null, ?int $user = null): InternalResponse
+    protected function callFrontendUrl(string $url_part, array $queryParameters = [], ?string $body = null, ?int $user = null): ResponseInterface
     {
         // set encryptionKey for hmac to work
         $GLOBALS['TYPO3_CONF_VARS']['SYS']['encryptionKey'] = self::NOT_SO_SECRET_ENCRYPTION_KEY;
@@ -255,8 +258,12 @@ abstract class _abstractControllerFunctionalTestCase extends _abstractFunctional
      * @param string   $redirect_to
      * @param array    $raw_parameter
      */
-    public function testRedirect(string $action, array $parameter, ?int $user = null, string $redirect_to = 'default', array $raw_parameter = []): void
+    public function testRedirect(?string $action = null, ?array $parameter = null, ?int $user = null, string $redirect_to = 'default', array $raw_parameter = []): void
     {
+        if ($action === null) {
+            self::markTestSkipped('no Redirects defined');
+        }
+
         self::$headers = [];
 
         // TODO: create possibility to use 'url:' as action

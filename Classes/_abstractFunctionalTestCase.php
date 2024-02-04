@@ -14,12 +14,11 @@
 
 namespace ScoutNet\TestingTools;
 
-use TYPO3\CMS\Core\Cache\Backend\NullBackend;
+use Psr\Container\ContainerInterface;
 use TYPO3\CMS\Core\Database\Schema\SchemaMigrator;
 use TYPO3\CMS\Core\Database\Schema\SqlReader;
 use TYPO3\CMS\Core\Information\Typo3Version;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
-use TYPO3\TestingFramework\Core\DatabaseConnectionWrapper;
 use TYPO3\TestingFramework\Core\Exception;
 use TYPO3\TestingFramework\Core\Functional\Framework\DataHandling\Snapshot\DatabaseSnapshot;
 use TYPO3\TestingFramework\Core\Functional\FunctionalTestCase;
@@ -30,10 +29,15 @@ abstract class _abstractFunctionalTestCase extends FunctionalTestCase
     protected bool $isFirstTest = true;
     protected static string $currentTestCaseClass = '';
 
+    // needs to be copied over, since private in FunctionalTestCase
+    protected ContainerInterface $container;
+
     /**
      * Set up creates a test instance and database.
      *
      * This method should be called with parent::setUp() in your test cases!
+     *
+     * Custom Changed function which includes caching of dependencies injected code.
      *
      * @throws Exception
      */
@@ -50,7 +54,6 @@ abstract class _abstractFunctionalTestCase extends FunctionalTestCase
         putenv('TYPO3_PATH_APP=' . $this->instancePath);
 
         $testbase = new Testbase();
-        $testbase->defineTypo3ModeBe();
         $testbase->setTypo3TestingContext();
 
         // See if we're the first test of this test case.
@@ -75,15 +78,18 @@ abstract class _abstractFunctionalTestCase extends FunctionalTestCase
             }
             $testbase->loadExtensionTables();
 
-            // import static content
+            // **********************************************************************
+            // Custom code to import static content
+            // **********************************************************************
             $schemaMigrationService = GeneralUtility::makeInstance(SchemaMigrator::class);
             $sqlReader = GeneralUtility::makeInstance(SqlReader::class);
             $sqlCode = $sqlReader->getTablesDefinitionString(true);
 
             $insertStatements = $sqlReader->getInsertStatementArray($sqlCode);
             $schemaMigrationService->importStaticData($insertStatements);
+            // **********************************************************************
         } else {
-            DatabaseSnapshot::initialize(dirname(self::getInstancePath()) . '/functional-sqlite-dbs/', $this->identifier);
+            DatabaseSnapshot::initialize(dirname($this->getInstancePath()) . '/functional-sqlite-dbs/', $this->identifier);
             $testbase->removeOldInstanceIfExists($this->instancePath);
             // Basic instance directory structure
             $testbase->createDirectory($this->instancePath . '/fileadmin');
@@ -99,15 +105,19 @@ abstract class _abstractFunctionalTestCase extends FunctionalTestCase
                 'backend',
                 'frontend',
                 'extbase',
-                'install',
                 'fluid',
             ];
-            if ((new Typo3Version())->getMajorVersion() < 12) {
-                $defaultCoreExtensionsToLoad[] = 'recordlist';
+            if ((new Typo3Version())->getMajorVersion() < 13) {
+                // @todo: Remove with next major TF version
+                $defaultCoreExtensionsToLoad[] = 'install';
             }
+            $frameworkExtension = [
+                'Resources/Core/Functional/Extensions/json_response',
+                'Resources/Core/Functional/Extensions/private_container',
+            ];
             $testbase->setUpInstanceCoreLinks($this->instancePath, $defaultCoreExtensionsToLoad, $this->coreExtensionsToLoad);
             $testbase->linkTestExtensionsToInstance($this->instancePath, $this->testExtensionsToLoad);
-            $testbase->linkFrameworkExtensionsToInstance($this->instancePath, $this->frameworkExtensionsToLoad);
+            $testbase->linkFrameworkExtensionsToInstance($this->instancePath, $frameworkExtension);
             $testbase->linkPathsInTestInstance($this->instancePath, $this->pathsToLinkInTestInstance);
             $testbase->providePathsInTestInstance($this->instancePath, $this->pathsToProvideInTestInstance);
             $localConfiguration['DB'] = $testbase->getOriginalDatabaseSettingsFromEnvironmentOrLocalConfiguration();
@@ -117,10 +127,19 @@ abstract class _abstractFunctionalTestCase extends FunctionalTestCase
             $dbDriver = $localConfiguration['DB']['Connections']['Default']['driver'];
             if ($dbDriver !== 'pdo_sqlite') {
                 $originalDatabaseName = $localConfiguration['DB']['Connections']['Default']['dbname'];
+                if ($originalDatabaseName !== preg_replace('/[^a-zA-Z0-9_]/', '', $originalDatabaseName)) {
+                    throw new \RuntimeException(
+                        sprintf(
+                            'Database name "%s" is invalid. Use a valid name, for example "%s".',
+                            $originalDatabaseName,
+                            preg_replace('/[^a-zA-Z0-9_]/', '', $originalDatabaseName)
+                        ),
+                        1695139917
+                    );
+                }
                 // Append the unique identifier to the base database name to end up with a single database per test case
                 $dbName = $originalDatabaseName . '_ft' . $this->identifier;
                 $localConfiguration['DB']['Connections']['Default']['dbname'] = $dbName;
-                $localConfiguration['DB']['Connections']['Default']['wrapperClass'] = DatabaseConnectionWrapper::class;
                 $testbase->testDatabaseNameIsNotTooLong($originalDatabaseName, $localConfiguration);
                 if ($dbDriver === 'mysqli' || $dbDriver === 'pdo_mysql') {
                     $localConfiguration['DB']['Connections']['Default']['charset'] = 'utf8mb4';
@@ -138,30 +157,27 @@ abstract class _abstractFunctionalTestCase extends FunctionalTestCase
             // $this->configurationToUseInTestInstance if needed again.
             $localConfiguration['SYS']['displayErrors'] = '1';
             $localConfiguration['SYS']['debugExceptionHandler'] = '';
-
-            if ((new Typo3Version())->getMajorVersion() >= 11
-                && defined('TYPO3_TESTING_FUNCTIONAL_REMOVE_ERROR_HANDLER')
-            ) {
-                // @deprecated, will *always* be done with next major version: TYPO3 v11
-                // with "<const name="TYPO3_TESTING_FUNCTIONAL_REMOVE_ERROR_HANDLER" value="true" />"
-                // in FunctionalTests.xml does not suppress warnings, notices and deprecations.
-                // By setting errorHandler to empty string, only the phpunit error handler is
-                // registered in functional tests, so settings like convertWarningsToExceptions="true"
-                // in FunctionalTests.xml will let tests fail that throw warnings.
-                $localConfiguration['SYS']['errorHandler'] = '';
-            }
-
+            // By setting errorHandler to empty string, only the phpunit error handler is
+            // registered in functional tests, so settings like convertWarningsToExceptions="true"
+            // in FunctionalTests.xml will let tests fail that throw warnings.
+            $localConfiguration['SYS']['errorHandler'] = '';
             $localConfiguration['SYS']['trustedHostsPattern'] = '.*';
             $localConfiguration['SYS']['encryptionKey'] = 'i-am-not-a-secure-encryption-key';
-            $localConfiguration['SYS']['caching']['cacheConfigurations']['extbase_object']['backend'] = NullBackend::class;
             $localConfiguration['GFX']['processor'] = 'GraphicsMagick';
+            // Set cache backends to null backend instead of database backend let us save time for creating
+            // database schema for it and reduces selects/inserts to the database for cache operations, which
+            // are generally not really needed for functional tests. Specific tests may restore this in if needed.
+            $localConfiguration['SYS']['caching']['cacheConfigurations']['hash']['backend'] = 'TYPO3\\CMS\\Core\\Cache\\Backend\\NullBackend';
+            $localConfiguration['SYS']['caching']['cacheConfigurations']['imagesizes']['backend'] = 'TYPO3\\CMS\\Core\\Cache\\Backend\\NullBackend';
+            $localConfiguration['SYS']['caching']['cacheConfigurations']['pages']['backend'] = 'TYPO3\\CMS\\Core\\Cache\\Backend\\NullBackend';
+            $localConfiguration['SYS']['caching']['cacheConfigurations']['rootline']['backend'] = 'TYPO3\\CMS\\Core\\Cache\\Backend\\NullBackend';
             $testbase->setUpLocalConfiguration($this->instancePath, $localConfiguration, $this->configurationToUseInTestInstance);
             $testbase->setUpPackageStates(
                 $this->instancePath,
                 $defaultCoreExtensionsToLoad,
                 $this->coreExtensionsToLoad,
                 $this->testExtensionsToLoad,
-                $this->frameworkExtensionsToLoad
+                $frameworkExtension
             );
 
             // **********************************************************************
@@ -225,13 +241,31 @@ abstract class _abstractFunctionalTestCase extends FunctionalTestCase
             }
             $testbase->loadExtensionTables();
             if ($this->initializeDatabase) {
-                $testbase->createDatabaseStructure();
+                $testbase->createDatabaseStructure($this->container);
                 if ($dbDriver === 'pdo_sqlite') {
                     // Copy sqlite file '/path/functional-sqlite-dbs/test_123.sqlite' to
-                    // '/path/functional-sqlite-dbs/test_123.empty.sqlite'. This is re-used for consequtive tests.
+                    // '/path/functional-sqlite-dbs/test_123.empty.sqlite'. This is re-used for consecutive tests.
                     copy($dbPathSqlite, $dbPathSqliteEmpty);
                 }
             }
         }
+    }
+
+    /**
+     * Custom tearDown() unsets private variables, which are copied here
+     */
+    protected function tearDown(): void
+    {
+        parent::tearDown();
+        unset($this->container);
+    }
+
+    /**
+     * Returns the custom TYPO3 dependency injection container
+     * containing all public services.
+     */
+    protected function getContainer(): ContainerInterface
+    {
+        return $this->container;
     }
 }

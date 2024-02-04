@@ -182,9 +182,9 @@ trait AnnotationTestTrait
                         }
                     } elseif ($annotation->validator === 'NotEmpty') {
                         if ($tableConfig['config']['type'] === 'input') {
-                            $this->assertStringContainsStringIgnoringCase('required', $tableConfig['config']['eval'] ?? '', $prop->getName() . ' is required.');
+                            $this->assertEquals(true, $tableConfig['config']['required'] ?? false, $prop->getName() . ' is required.');
                         } elseif ($tableConfig['config']['type'] === 'text') {
-                            $this->assertStringContainsStringIgnoringCase('required', $tableConfig['config']['eval'] ?? '', $prop->getName() . ' is required.');
+                            $this->assertEquals(true, $tableConfig['config']['required'] ?? false, $prop->getName() . ' is required.');
                         } elseif ($tableConfig['config']['type'] === 'group') {
                             $this->assertEquals(1, $tableConfig['config']['minitems'] ?? 0, $prop->getName() . ' is required.');
                         } elseif ($tableConfig['config']['type'] === 'select') {
