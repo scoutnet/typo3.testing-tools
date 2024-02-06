@@ -57,7 +57,7 @@ abstract class _abstractViewHelperFunctionalTestCase extends _abstractFunctional
     /**
      * @return array
      */
-    abstract static public function dataProviderInvalidArguments(): array;
+    abstract public static function dataProviderInvalidArguments(): array;
 
     /**
      * @param array $arguments
@@ -65,7 +65,7 @@ abstract class _abstractViewHelperFunctionalTestCase extends _abstractFunctional
      *
      * @dataProvider dataProviderInvalidArguments
      */
-    public function testInvalidArguments(?array $arguments=null, $error=null): void
+    public function testInvalidArguments(?array $arguments = null, $error = null): void
     {
         if ($arguments === null) {
             self::markTestSkipped('no Redirects defined');
@@ -87,7 +87,7 @@ abstract class _abstractViewHelperFunctionalTestCase extends _abstractFunctional
     /**
      * @return array
      */
-    abstract static public function dataProviderValidArguments(): array;
+    abstract public static function dataProviderValidArguments(): array;
 
     /**
      * @param array $arguments
@@ -95,7 +95,7 @@ abstract class _abstractViewHelperFunctionalTestCase extends _abstractFunctional
      *
      * @dataProvider dataProviderValidArguments
      */
-    public function testValidArguments(?array $arguments=null, $expected=null): void
+    public function testValidArguments(?array $arguments = null, $expected = null): void
     {
         if ($arguments === null) {
             self::markTestSkipped('no Redirects defined');

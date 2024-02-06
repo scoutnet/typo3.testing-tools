@@ -42,7 +42,7 @@ PHP_VERSIONS ?= 8.1 8.2 8.3
 COMPOSE_PROJECT_NAME_PREFIX=typo3-local-$(JOB_NAME)-$(BUILD_ID)-$(EXT_NAME)-
 
 export GITHUB_USER=scoutnet
-export GITHUB_REPO=typo3.testing-tools
+export GITHUB_REPO=plugins.typo3.$(EXT_NAME)
 
 default: zip
 
@@ -262,6 +262,7 @@ $(CGL_FIX): cglFix-php%: $(TEST_ROOT_FOLDER)/docker-php%-cgl/.env $(TEST_ROOT_FO
 	# CGL Fix using php$*
 	@cd $(TEST_ROOT_FOLDER)/docker-php$*-cgl && export COMPOSE_PROJECT_NAME=$(COMPOSE_PROJECT_NAME_PREFIX)php$*-cgl && export CGLCHECK_DRY_RUN=""; docker-compose run cgl
 	@cd $(TEST_ROOT_FOLDER)/docker-php$*-cgl && export COMPOSE_PROJECT_NAME=$(COMPOSE_PROJECT_NAME_PREFIX)php$*-cgl && export CGLCHECK_DRY_RUN=""; docker-compose down
+	@git commit -am "cglFix"
 
 .PHONY: unitTest
 unitTest: %Test: $(foreach ver,$(subst .,,$(PHP_VERSIONS)),%Test-php$(ver))
