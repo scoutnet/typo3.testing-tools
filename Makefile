@@ -42,7 +42,8 @@ PHP_VERSIONS ?= 8.1 8.2 8.3
 COMPOSE_PROJECT_NAME_PREFIX=typo3-local-$(JOB_NAME)-$(BUILD_ID)-$(EXT_NAME)-
 
 export GITHUB_USER=scoutnet
-export GITHUB_REPO=plugins.typo3.$(EXT_NAME)
+export GITHUB_REPO=typo3.testing-tools
+
 
 default: zip
 
