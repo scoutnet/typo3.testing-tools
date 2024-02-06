@@ -57,7 +57,7 @@ abstract class _abstractViewHelperFunctionalTestCase extends _abstractFunctional
     /**
      * @return array
      */
-    abstract public function dataProviderInvalidArguments(): array;
+    abstract static public function dataProviderInvalidArguments(): array;
 
     /**
      * @param array $arguments
@@ -65,8 +65,12 @@ abstract class _abstractViewHelperFunctionalTestCase extends _abstractFunctional
      *
      * @dataProvider dataProviderInvalidArguments
      */
-    public function testInvalidArguments(array $arguments, $error): void
+    public function testInvalidArguments(?array $arguments=null, $error=null): void
     {
+        if ($arguments === null) {
+            self::markTestSkipped('no Redirects defined');
+        }
+
         $this->expectException($error[0]);
         $this->expectExceptionCode($error[1]);
 
@@ -83,7 +87,7 @@ abstract class _abstractViewHelperFunctionalTestCase extends _abstractFunctional
     /**
      * @return array
      */
-    abstract public function dataProviderValidArguments(): array;
+    abstract static public function dataProviderValidArguments(): array;
 
     /**
      * @param array $arguments
@@ -91,8 +95,12 @@ abstract class _abstractViewHelperFunctionalTestCase extends _abstractFunctional
      *
      * @dataProvider dataProviderValidArguments
      */
-    public function testValidArguments(array $arguments, $expected): void
+    public function testValidArguments(?array $arguments=null, $expected=null): void
     {
+        if ($arguments === null) {
+            self::markTestSkipped('no Redirects defined');
+        }
+
         GeneralUtility::setIndpEnv('TYPO3_REQUEST_URL', 'localhost');
         $view = new StandaloneView();
         $view->assignMultiple($arguments);
