@@ -79,7 +79,22 @@ trait AnnotationTestTrait
         $this->assertNotEmpty($tableName, 'unknown Tablename');
 
         // load TCA
-        $tcaTable = require '../Configuration/TCA/' . $tableName . '.php';
+        if (is_file('../Configuration/TCA/' . $tableName . '.php')) {
+            $tcaTable = require '../Configuration/TCA/' . $tableName . '.php';
+        } elseif (is_file('../Configuration/TCA/Overrides/' . $tableName . '.php')) {
+            if (is_file($this->overriddenTCAFile ?? '')) {
+                $GLOBALS['TCA'][$tableName] = require $this->overriddenTCAFile;
+            } else {
+                $this->fail('Cannot find Original TCA configuration (please set overriddenTCAFile!');
+            }
+
+            // Include Overrides
+            require '../Configuration/TCA/Overrides/' . $tableName . '.php';
+
+            $tcaTable = $GLOBALS['TCA'][$tableName];
+        } else {
+            $this->fail('Cannot find TCA configuration!');
+        }
 
         // start checking Annotations
         $o = new ReflectionClass($this->testedClass);
