@@ -206,6 +206,8 @@ trait AnnotationTestTrait
                             $this->assertEquals('selectSingle', $tableConfig['config']['renderType'] ?? '', $prop->getName() . ': renderType needs to be selectSingle.');
                             $this->assertEquals([], $tableConfig['config']['items'] ?? [], $prop->getName() . ': items needs to be empty.'); // TODO: check, if this is allways the case
                             $this->assertEquals('notSET_1641824444', $tableConfig['config']['default'] ?? 'notSET_1641824444', $prop->getName() . ': default must not be set!'); // TODO: check, if this is allways the case
+                        } elseif ($tableConfig['config']['type'] === 'datetime') {
+                            $this->assertEquals(true, $tableConfig['config']['required'] ?? false, $prop->getName() . ' is required.');
                         } else {
                             // TODO: check that this is not empty for other items
                             print 'unhandled NotEmpty for type ' . $tableConfig['config']['type'] . "\n";
