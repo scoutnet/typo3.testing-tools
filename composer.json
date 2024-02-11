@@ -43,6 +43,8 @@
 		"codeception/module-webdriver": "^1.0",
 		"codeception/module-asserts": "^1.2",
 		"zbateson/mail-mime-parser": "^1.2",
+		"phpspec/prophecy": "~1.0",
+		"phpspec/prophecy-phpunit": "~2.0",
 		"phpunit/php-text-template": "^2.0"
 	},
 	"autoload": {
