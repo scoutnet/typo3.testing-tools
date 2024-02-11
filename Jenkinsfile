@@ -1,6 +1,6 @@
 // This file is a generic Scoutnet Jenkins file. The original is found in the dummy extension
 // https://github.com/scoutnet/plugins.typo3.scoutnet_dummy/blob/master/Jenkinsfile
-// Jenkinsfile Version: 3.0.0
+// Jenkinsfile Version: 3.0.1
 pipeline {
     agent any
 
@@ -18,9 +18,7 @@ pipeline {
                         def tests = [:]
 
                         sh "echo '{\"http-basic\": {\"repo.scoutnet.de\": {\"username\": \"${REPO_AUTH_USER}\", \"password\": \"${REPO_AUTH_PASSWORD}\"}}}' > auth.json"
-                        sh "make composerInstall"
-                        sh "make composerUpdate"
-                        sh "make composerValidate"
+                        sh "make init"
 
                         tests['cgl Test'] = {
                             echo "Testing CGL"
