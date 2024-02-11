@@ -70,7 +70,7 @@ abstract class _abstractControllerFunctionalTestCase extends _abstractFunctional
     protected string $controller;
     protected int $pluginPid = self::PAGE_USER_CONTROLLER;
     protected string $pluginPageTitle = 'Controller';
-    protected string $pluginSlug = '';
+    protected static string $pluginSlug = '';
 
     public static array $headers = [];
 
