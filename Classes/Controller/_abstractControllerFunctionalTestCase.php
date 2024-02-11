@@ -70,7 +70,9 @@ abstract class _abstractControllerFunctionalTestCase extends _abstractFunctional
     protected string $controller;
     protected int $pluginPid = self::PAGE_USER_CONTROLLER;
     protected string $pluginPageTitle = 'Controller';
-    protected static string $pluginSlug = '';
+    
+    
+    abstract protected static function getPluginSlug(): String;
 
     public static array $headers = [];
 
@@ -321,7 +323,7 @@ abstract class _abstractControllerFunctionalTestCase extends _abstractFunctional
                     } elseif (str_starts_with($redirect_to, 'url:')) {
                         self::assertEquals('location: ' . substr($redirect_to, 4), $header);
                     } else {
-                        self::assertMatchesRegularExpression('#^location: (http|https)://localhost/' . ltrim($this->pluginSlug, '/') . '[?]' . $this->parameterPrefix . '%5Baction%5D=' . $redirect_to . '&' . $this->parameterPrefix . '%5Bcontroller%5D=' . $this->controller . '&.*#', $header);
+                        self::assertMatchesRegularExpression('#^location: (http|https)://localhost/' . ltrim(static::getPluginSlug(), '/') . '[?]' . $this->parameterPrefix . '%5Baction%5D=' . $redirect_to . '&' . $this->parameterPrefix . '%5Bcontroller%5D=' . $this->controller . '&.*#', $header);
                     }
                 }
             }
