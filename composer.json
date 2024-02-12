@@ -23,7 +23,17 @@
 	},
 	"require": {
 		"ext-json": "*",
-		"typo3/testing-framework": "^6.16|^7.0|^8.0"
+		"typo3/testing-framework": "^6.16|^7.0|^8.0",
+		"zbateson/mail-mime-parser": "^2.4",
+		"phpspec/prophecy": "~1.18",
+		"phpspec/prophecy-phpunit": "~2.1",
+		"phpstan/phpstan": "^1.7.0",
+		"phpstan/phpstan-phpunit": "^1.1.1",
+		"phpspec/prophecy": "~1.0",
+		"codeception/codeception": "^4.1",
+		"codeception/module-webdriver": "^1.0",
+		"codeception/module-asserts": "^1.2",
+		"phpunit/php-text-template": "^2.0"
 	},
 	"config": {
 		"vendor-dir": ".Build/vendor",
@@ -35,17 +45,7 @@
 		}
 	},
 	"require-dev": {
-		"typo3/coding-standards": "^0.7.1",
-		"phpstan/phpstan": "^1.7.0",
-		"phpstan/phpstan-phpunit": "^1.1.1",
-		"phpspec/prophecy": "~1.0",
-		"codeception/codeception": "^4.1",
-		"codeception/module-webdriver": "^1.0",
-		"codeception/module-asserts": "^1.2",
-		"zbateson/mail-mime-parser": "^1.2",
-		"phpspec/prophecy": "~1.0",
-		"phpspec/prophecy-phpunit": "~2.0",
-		"phpunit/php-text-template": "^2.0"
+		"typo3/coding-standards": "^0.7.1"
 	},
 	"autoload": {
 		"psr-4": {
