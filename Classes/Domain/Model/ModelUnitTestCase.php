@@ -7,6 +7,7 @@ use ReflectionProperty;
 use TypeError;
 use TYPO3\CMS\Extbase\DomainObject\AbstractEntity;
 use TYPO3\TestingFramework\Core\Unit\UnitTestCase;
+use DateTime;
 
 abstract class ModelUnitTestCase extends UnitTestCase
 {
@@ -74,6 +75,24 @@ abstract class ModelUnitTestCase extends UnitTestCase
                 try {
                     $a = new ReflectionProperty($this->subject, $attribute);
                     $ret_type = $this->getDocComment($a->getDocComment(), '@var');
+                    $nullable = false;
+
+                    // sort and remove null
+                    if (str_contains($ret_type, '|')) {
+                        $ret_type = explode('|', $ret_type);
+                        if (($key = array_search('null', $ret_type)) !== false) {
+                            unset($ret_type[$key]);
+                            $nullable = true;
+                        }
+                        sort($ret_type);
+                        $ret_type = implode('|', $ret_type);
+                    }
+
+                    if ($nullable) {
+                        self::assertNull($this->subject->$getter(), $attribute . 'does not return null as default.');
+                    }
+
+                    $ret_type = strtolower($ret_type);
 
                     switch ($ret_type) {
                         case 'integer':
@@ -101,6 +120,20 @@ abstract class ModelUnitTestCase extends UnitTestCase
                                 $this->subject->$getter(),
                                 $attribute . ' does not return what was saved.'
                             );
+                            break;
+                        case 'datetime':
+                            try {
+                                // check if only DateTime is allowed
+                                $this->subject->$setter('1982-09-16');
+
+                                self::fail($attribute . ' allows non DateTime Values.');
+                            } catch (TypeError) {}
+
+                            // check if correct DateTimes are allowed
+                            $testDate = new DateTime();
+                            $this->subject->$setter($testDate);
+
+                            self::assertEquals($testDate, $this->subject->$getter());
                             break;
                     }
                 } catch (ReflectionException $exception) {
