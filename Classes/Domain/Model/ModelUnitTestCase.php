@@ -2,12 +2,12 @@
 
 namespace ScoutNet\TestingTools\Domain\Model;
 
+use DateTime;
 use ReflectionException;
 use ReflectionProperty;
 use TypeError;
 use TYPO3\CMS\Extbase\DomainObject\AbstractEntity;
 use TYPO3\TestingFramework\Core\Unit\UnitTestCase;
-use DateTime;
 
 abstract class ModelUnitTestCase extends UnitTestCase
 {
@@ -102,7 +102,8 @@ abstract class ModelUnitTestCase extends UnitTestCase
                                 $this->subject->$setter('test');
 
                                 self::fail($attribute . ' allows String content, but is integer.');
-                            } catch (TypeError) {}
+                            } catch (TypeError) {
+                            }
 
                             // check if correct numbers are returned
                             $this->subject->$setter(23);
@@ -127,7 +128,8 @@ abstract class ModelUnitTestCase extends UnitTestCase
                                 $this->subject->$setter('1982-09-16');
 
                                 self::fail($attribute . ' allows non DateTime Values.');
-                            } catch (TypeError) {}
+                            } catch (TypeError) {
+                            }
 
                             // check if correct DateTimes are allowed
                             $testDate = new DateTime();
