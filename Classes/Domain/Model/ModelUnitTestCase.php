@@ -78,14 +78,12 @@ abstract class ModelUnitTestCase extends UnitTestCase
                     switch ($ret_type) {
                         case 'integer':
                         case 'int':
-                            $this->expectException(TypeError::class);
-                            // check if only numbers are allowed
-                            $this->subject->$setter('test');
-                            self::assertEquals(
-                                0,
-                                $this->subject->$getter(),
-                                $attribute . ' allows String content, but is integer.'
-                            );
+                            try {
+                                // check if only numbers are allowed
+                                $this->subject->$setter('test');
+
+                                self::fail($attribute . ' allows String content, but is integer.');
+                            } catch (TypeError) {}
 
                             // check if correct numbers are returned
                             $this->subject->$setter(23);
