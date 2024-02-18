@@ -32,8 +32,7 @@
 		"phpspec/prophecy": "~1.0",
 		"codeception/codeception": "^4.1",
 		"codeception/module-webdriver": "^1.0",
-		"codeception/module-asserts": "^1.2",
-		"phpunit/php-text-template": "^2.0"
+		"codeception/module-asserts": "^1.2"
 	},
 	"config": {
 		"vendor-dir": ".Build/vendor",
