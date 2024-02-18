@@ -30,9 +30,9 @@
 		"phpstan/phpstan": "^1.7.0",
 		"phpstan/phpstan-phpunit": "^1.1.1",
 		"phpspec/prophecy": "~1.0",
-		"codeception/codeception": "^4.1",
-		"codeception/module-webdriver": "^1.0",
-		"codeception/module-asserts": "^1.2"
+		"codeception/codeception": "^5.1",
+		"codeception/module-webdriver": "^4.0",
+		"codeception/module-asserts": "^3.0"
 	},
 	"config": {
 		"vendor-dir": ".Build/vendor",
