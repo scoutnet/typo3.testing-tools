@@ -68,7 +68,8 @@ abstract class _abstractViewHelperFunctionalTestCase extends _abstractFunctional
     public function testInvalidArguments(?array $arguments = null, $error = null): void
     {
         if ($arguments === null) {
-            self::markTestSkipped('no Redirects defined');
+            print('no invalid Arguments specified');
+            return;
         }
 
         $this->expectException($error[0]);
@@ -98,7 +99,8 @@ abstract class _abstractViewHelperFunctionalTestCase extends _abstractFunctional
     public function testValidArguments(?array $arguments = null, $expected = null): void
     {
         if ($arguments === null) {
-            self::markTestSkipped('no Redirects defined');
+            print('no valid Arguments specified');
+            return;
         }
 
         GeneralUtility::setIndpEnv('TYPO3_REQUEST_URL', 'localhost');
