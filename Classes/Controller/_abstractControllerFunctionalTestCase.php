@@ -262,7 +262,7 @@ abstract class _abstractControllerFunctionalTestCase extends _abstractFunctional
     public function testRedirect(?string $action = null, ?array $parameter = null, ?int $user = null, string $redirect_to = 'default', array $raw_parameter = []): void
     {
         if ($action === null) {
-            print 'no Redirects defined';
+            // no Redirects defined
             return;
         }
 

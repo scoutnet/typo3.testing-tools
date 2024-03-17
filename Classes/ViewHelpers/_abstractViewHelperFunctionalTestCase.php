@@ -68,7 +68,7 @@ abstract class _abstractViewHelperFunctionalTestCase extends _abstractFunctional
     public function testInvalidArguments(?array $arguments = null, $error = null): void
     {
         if ($arguments === null) {
-            print 'no invalid Arguments specified';
+            // no invalid Arguments specified
             return;
         }
 
@@ -99,7 +99,7 @@ abstract class _abstractViewHelperFunctionalTestCase extends _abstractFunctional
     public function testValidArguments(?array $arguments = null, $expected = null): void
     {
         if ($arguments === null) {
-            print 'no valid Arguments specified';
+            // no valid Arguments specified
             return;
         }
 
