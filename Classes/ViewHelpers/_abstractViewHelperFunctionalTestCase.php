@@ -14,20 +14,16 @@
 
 namespace ScoutNet\TestingTools\ViewHelpers;
 
-use ScoutNet\TestingTools\_abstractFunctionalTestCase;
 use Psr\Http\Message\ServerRequestInterface;
-use ScoutNet\ScoutnetStructure\Domain\Model\Structure;
 use ScoutNet\ScoutnetStructure\ViewHelpers\Structure\SelectViewHelper;
+use ScoutNet\TestingTools\_abstractFunctionalTestCase;
 use TYPO3\CMS\Core\Core\SystemEnvironmentBuilder;
 use TYPO3\CMS\Core\Http\NormalizedParams;
 use TYPO3\CMS\Core\Http\ServerRequest;
-use TYPO3\CMS\Core\Pagination\ArrayPaginator;
-use TYPO3\CMS\Core\Pagination\SimplePagination;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Mvc\ExtbaseRequestParameters;
 use TYPO3\CMS\Extbase\Mvc\Request;
 use TYPO3\CMS\Fluid\View\StandaloneView;
-use TYPO3\CMS\Frontend\Controller\TypoScriptFrontendController;
 
 abstract class _abstractViewHelperFunctionalTestCase extends _abstractFunctionalTestCase
 {
