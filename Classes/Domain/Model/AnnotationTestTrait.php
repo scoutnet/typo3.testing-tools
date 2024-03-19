@@ -85,7 +85,7 @@ trait AnnotationTestTrait
             if (is_file($this->overriddenTCAFile ?? '')) {
                 $GLOBALS['TCA'][$tableName] = require $this->overriddenTCAFile;
             } else {
-                $this->fail('Cannot find Original TCA configuration (please set overriddenTCAFile!');
+                $this->fail('Cannot find Original TCA configuration (please set overriddenTCAFile)!' . $tableName);
             }
 
             // Include Overrides
@@ -100,6 +100,11 @@ trait AnnotationTestTrait
         $o = new ReflectionClass($this->testedClass);
         $parser = new AnnotationReader();
         $use_statements = $this->get_use_statements_from_class($o);
+
+        // add parent use Statements as well (for Overrides)
+        if ($p = get_parent_class($this->testedClass)) {
+            $use_statements += $this->get_use_statements_from_class(new ReflectionClass($p));
+        }
 
         foreach ($o->getProperties() as $prop) {
             // TODO: maybe use Typo3 to check those
