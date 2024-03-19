@@ -97,13 +97,19 @@ trait AnnotationTestTrait
         }
 
         // start checking Annotations
-        $o = new ReflectionClass($this->testedClass);
-        $parser = new AnnotationReader();
-        $use_statements = $this->get_use_statements_from_class($o);
-
+        $use_statements = [];
         // add parent use Statements as well (for Overrides)
         if ($p = get_parent_class($this->testedClass)) {
             $use_statements += $this->get_use_statements_from_class(new ReflectionClass($p));
+        }
+
+        $o = new ReflectionClass($this->testedClass);
+        $parser = new AnnotationReader();
+        $use_statements += $this->get_use_statements_from_class($o);
+
+        // add mapped classes
+        if ($this->map_classes) {
+            $use_statements += $this->map_classes;
         }
 
         foreach ($o->getProperties() as $prop) {
