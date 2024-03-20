@@ -22,6 +22,11 @@ abstract class ModelUnitTestCase extends UnitTestCase
      */
     protected string $testedClass;
 
+    /**
+     * @var array
+     */
+    protected array $map_classes = [];
+
     protected function setUp(): void
     {
         $this->subject = new $this->testedClass();
