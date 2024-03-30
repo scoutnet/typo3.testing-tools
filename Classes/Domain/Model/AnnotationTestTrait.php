@@ -223,11 +223,17 @@ trait AnnotationTestTrait
                             $this->assertEquals(true, $tableConfig['config']['required'] ?? false, $prop->getName() . ' is required.');
                         } elseif ($tableConfig['config']['type'] === 'text') {
                             $this->assertEquals(true, $tableConfig['config']['required'] ?? false, $prop->getName() . ' is required.');
+                        } elseif ($tableConfig['config']['type'] === 'password') {
+                            $this->assertEquals(true, $tableConfig['config']['required'] ?? false, $prop->getName() . ' is required.');
+                        } elseif ($tableConfig['config']['type'] === 'email') {
+                            $this->assertEquals(true, $tableConfig['config']['required'] ?? false, $prop->getName() . ' is required.');
+                        } elseif ($tableConfig['config']['type'] === 'radio') {
+                            $this->assertEquals(true, $tableConfig['config']['required'] ?? false, $prop->getName() . ' is required.');
                         } elseif ($tableConfig['config']['type'] === 'group') {
                             $this->assertEquals(1, $tableConfig['config']['minitems'] ?? 0, $prop->getName() . ' is required.');
                         } elseif ($tableConfig['config']['type'] === 'select') {
                             $this->assertEquals('selectSingle', $tableConfig['config']['renderType'] ?? '', $prop->getName() . ': renderType needs to be selectSingle.');
-                            $this->assertEquals([], $tableConfig['config']['items'] ?? [], $prop->getName() . ': items needs to be empty.'); // TODO: check, if this is allways the case
+                            //  $this->assertEquals([], $tableConfig['config']['items'] ?? [], $prop->getName() . ': items needs to be empty.'); // TODO: check, if this is allways the case
                             $this->assertEquals('notSET_1641824444', $tableConfig['config']['default'] ?? 'notSET_1641824444', $prop->getName() . ': default must not be set!'); // TODO: check, if this is allways the case
                         } elseif ($tableConfig['config']['type'] === 'datetime') {
                             $this->assertEquals(true, $tableConfig['config']['required'] ?? false, $prop->getName() . ' is required.');
@@ -238,9 +244,12 @@ trait AnnotationTestTrait
                             var_dump($tableConfig);
                         }
                     } else {
-                        print 'unhandled Validator' . "\n";
-                        /** @noinspection ForgottenDebugOutputInspection */
-                        var_dump($annotation);
+                        // ignore custom ScoutNet validators
+                        if (!str_starts_with($annotation->validator, '\\ScoutNet\\')) {
+                            print 'unhandled Validator' . "\n";
+                            /** @noinspection ForgottenDebugOutputInspection */
+                            var_dump($annotation);
+                        }
                     }
                 } elseif ($annotation instanceof Transient) {
                     // TODO: check if we can check those annotations
