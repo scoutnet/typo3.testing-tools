@@ -176,8 +176,20 @@ trait AnnotationTestTrait
                     $test->_setProperty($prop->getName(), $lazyProxy);
 
                     // check if the get Function returns the correct value and not the LazyProxy
-                    $function = 'get' . lcfirst($prop->getName());
-                    $this->assertEquals($value, $test->$function());
+                    $getFunction = 'get' . ucfirst($prop->getName());
+                    $setFunction = 'set' . ucfirst($prop->getName());
+
+                    $this->assertEquals($value, $test->$getFunction());
+
+                    // generate new test object
+                    $test = new $this->testedClass();
+
+                    // TODO: check that LazyProxy is not allowed
+                    // check, that value is correct
+                    $test->$setFunction($value);
+
+                    // check if the get Function returns the correct value
+                    $this->assertEquals($value, $test->$getFunction());
                 } elseif ($annotation instanceof Validate) {
                     if ($annotation->validator === 'StringLength') {
                         //                        $min = $annotation->options['minimum']??null;
