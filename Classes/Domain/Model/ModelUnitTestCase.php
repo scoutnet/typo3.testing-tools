@@ -118,6 +118,46 @@ abstract class ModelUnitTestCase extends UnitTestCase
                                 $attribute . ' does not return what was saved.'
                             );
                             break;
+                        case 'bool':
+                            $isser = 'is' . ucfirst($attribute);
+                            $haser = 'has' . ucfirst($attribute);
+                            // check if correct numbers are returned
+                            $this->subject->$setter(true);
+                            self::assertTrue(
+                                $this->subject->$getter(),
+                                $getter . ' does not return true.'
+                            );
+                            if (method_exists($this->subject, $isser)) {
+                                self::assertTrue(
+                                    $this->subject->$isser(),
+                                    $isser . ' does not return true.'
+                                );
+                            }
+                            if (method_exists($this->subject, $haser)) {
+                                self::assertTrue(
+                                    $this->subject->$haser(),
+                                    $haser . ' does not return true.'
+                                );
+                            }
+
+                            $this->subject->$setter(false);
+                            self::assertFalse(
+                                $this->subject->$getter(),
+                                $getter . ' does not return what was saved.'
+                            );
+                            if (method_exists($this->subject, $isser)) {
+                                self::assertFalse(
+                                    $this->subject->$isser(),
+                                    $isser . ' does not return false.'
+                                );
+                            }
+                            if (method_exists($this->subject, $haser)) {
+                                self::assertFalse(
+                                    $this->subject->$haser(),
+                                    $haser . ' does not return false.'
+                                );
+                            }
+                            break;
                         case 'string':
                             // test, if we can set the attribute, and get it back from the getter
                             $this->subject->$setter('Test' . $attribute);
