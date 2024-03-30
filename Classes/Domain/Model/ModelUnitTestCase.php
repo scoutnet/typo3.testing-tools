@@ -3,15 +3,21 @@
 namespace ScoutNet\TestingTools\Domain\Model;
 
 use DateTime;
+use Doctrine\Common\Annotations\AnnotationReader;
+use Prophecy\PhpUnit\ProphecyTrait;
+use ReflectionClass;
 use ReflectionException;
 use ReflectionProperty;
 use TypeError;
 use TYPO3\CMS\Extbase\DomainObject\AbstractEntity;
+use TYPO3\CMS\Extbase\Persistence\ObjectStorage;
 use TYPO3\TestingFramework\Core\Unit\UnitTestCase;
 
 abstract class ModelUnitTestCase extends UnitTestCase
 {
     use AnnotationTestTrait;
+    use ProphecyTrait;
+
     /**
      * @var AbstractEntity
      */
@@ -65,6 +71,22 @@ abstract class ModelUnitTestCase extends UnitTestCase
      */
     public function testNotTestedStringAndIntegerAttributes(): void
     {
+        // start checking Annotations
+        $use_statements = [];
+        // add parent use Statements as well (for Overrides)
+        if ($p = get_parent_class($this->testedClass)) {
+            $use_statements += $this->get_use_statements_from_class(new ReflectionClass($p));
+        }
+
+        $o = new ReflectionClass($this->testedClass);
+        $parser = new AnnotationReader();
+        $use_statements += $this->get_use_statements_from_class($o);
+
+        // add mapped classes
+        if ($this->map_classes) {
+            $use_statements += $this->map_classes;
+        }
+
         foreach (get_class_methods(get_class($this->subject)) as $method) {
             $type = substr($method, 0, 3);
             $attribute = lcfirst(substr($method, 3));
@@ -81,6 +103,7 @@ abstract class ModelUnitTestCase extends UnitTestCase
                     $a = new ReflectionProperty($this->subject, $attribute);
                     $ret_type = $this->getDocComment($a->getDocComment(), '@var');
                     $nullable = false;
+                    $sub_type = null;
 
                     // sort and remove null
                     if (str_contains($ret_type, '|')) {
@@ -91,6 +114,13 @@ abstract class ModelUnitTestCase extends UnitTestCase
                         }
                         sort($ret_type);
                         $ret_type = implode('|', $ret_type);
+                    }
+
+                    if (str_contains($ret_type, '<')) {
+                        if (preg_match('/(\S+)<(\S+)>/', $ret_type, $matches)) {
+                            $ret_type = $matches[1];
+                            $sub_type = $matches[2];
+                        }
                     }
 
                     if ($nullable) {
@@ -166,6 +196,75 @@ abstract class ModelUnitTestCase extends UnitTestCase
                                 $this->subject->$getter(),
                                 $attribute . ' does not return what was saved.'
                             );
+                            break;
+                        case 'objectstorage':
+                            $add = 'add' . ucfirst($attribute);
+                            $remove = 'remove' . ucfirst($attribute);
+
+                            try {
+                                // check if only objectStorag are allowed
+                                $this->subject->$setter('test');
+                                $this->subject->$add('test');
+                                $this->subject->$remove('test');
+
+                                self::fail($attribute . ' allows String content, but is ObjectStorage.');
+                            } catch (TypeError) {
+                            }
+
+                            // add namespace from use statements
+                            $sub_type = $use_statements[$sub_type] ?? (str_contains($sub_type, '\\') ? $sub_type : $o->getNamespaceName() . '\\' . $sub_type);
+
+                            // check, that type exists
+                            if (!class_exists($sub_type)) {
+                                self::fail('Class ' . $sub_type . ' does not exists');
+                            }
+
+                            // generate expected return value
+                            $value = new ObjectStorage();
+
+                            $sub_value = $this->prophesize($sub_type);
+                            $value->attach($sub_value);
+
+                            $this->subject->$setter($value);
+
+                            self::assertEquals(
+                                $value,
+                                $this->subject->$getter(),
+                                $attribute . ' does not return what was saved.'
+                            );
+
+                            self::assertCount(
+                                1,
+                                $this->subject->$getter(),
+                                $attribute . ' does not return what was saved.'
+                            );
+
+                            // check add
+                            $second_value = $this->prophesize($sub_type)->reveal();
+                            $this->subject->$add($second_value);
+
+                            self::assertCount(
+                                2,
+                                $this->subject->$getter(),
+                                $attribute . ' does not return what was saved.'
+                            );
+
+                            // check remove
+                            $this->subject->$remove($second_value);
+                            self::assertCount(
+                                1,
+                                $this->subject->$getter(),
+                                $attribute . ' does not return what was saved.'
+                            );
+
+                            // check remove if not part
+                            $this->subject->$remove($second_value);
+                            self::assertCount(
+                                1,
+                                $this->subject->$getter(),
+                                $attribute . ' does not return what was saved.'
+                            );
+
                             break;
                         case 'datetime':
                             try {
