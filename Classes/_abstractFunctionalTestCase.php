@@ -15,11 +15,13 @@
 namespace ScoutNet\TestingTools;
 
 use Psr\Container\ContainerInterface;
+use TYPO3\CMS\Core\Database\ConnectionPool;
 use TYPO3\CMS\Core\Database\Schema\SchemaMigrator;
 use TYPO3\CMS\Core\Database\Schema\SqlReader;
 use TYPO3\CMS\Core\Information\Typo3Version;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\TestingFramework\Core\Exception;
+use TYPO3\TestingFramework\Core\Functional\Framework\DataHandling\Snapshot\DatabaseAccessor;
 use TYPO3\TestingFramework\Core\Functional\Framework\DataHandling\Snapshot\DatabaseSnapshot;
 use TYPO3\TestingFramework\Core\Functional\FunctionalTestCase;
 use TYPO3\TestingFramework\Core\Testbase;
@@ -267,5 +269,30 @@ abstract class _abstractFunctionalTestCase extends FunctionalTestCase
     protected function getContainer(): ContainerInterface
     {
         return $this->container;
+    }
+
+    /**
+     * copy of parent function, to make isFirstTest cache work
+     *
+     * @param callable|null $createCallback
+     * @param callable|null $restoreCallback
+     * @throws \Doctrine\DBAL\Exception
+     */
+    protected function withDatabaseSnapshot(?callable $createCallback = null, ?callable $restoreCallback = null): void
+    {
+        $connection = $this->getConnectionPool()->getConnectionByName(ConnectionPool::DEFAULT_CONNECTION_NAME);
+        $accessor = new DatabaseAccessor($connection);
+        $snapshot = DatabaseSnapshot::instance();
+        if ($this->isFirstTest) {
+            if ($createCallback) {
+                $createCallback();
+            }
+            $snapshot->create($accessor, $connection);
+        } else {
+            $snapshot->restore($accessor, $connection);
+            if ($restoreCallback) {
+                $restoreCallback();
+            }
+        }
     }
 }
