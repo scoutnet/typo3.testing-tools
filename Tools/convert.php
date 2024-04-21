@@ -6,14 +6,14 @@ function xmlToArray(SimpleXMLElement $xml): array
         $nodes = $xml->children();
         $attributes = $xml->attributes();
 
-        if (0 !== count($attributes)) {
+        if (count($attributes) !== 0) {
             foreach ($attributes as $attrName => $attrValue) {
-                $collection['attributes'][$attrName] = strval($attrValue);
+                $collection['attributes'][$attrName] = (string)$attrValue;
             }
         }
 
-        if (0 === $nodes->count()) {
-            $collection['value'] = strval($xml);
+        if ($nodes->count() === 0) {
+            $collection['value'] = (string)$xml;
             return $collection;
         }
 
@@ -30,7 +30,7 @@ function xmlToArray(SimpleXMLElement $xml): array
     };
 
     return [
-        $xml->getName() => $parser($xml)
+        $xml->getName() => $parser($xml),
     ];
 }
 
@@ -46,22 +46,22 @@ foreach ($xml as $database => $values) {
     $all_columns[$database] = [];
 
     // if we only have one object for that database make this an array
-    if(!array_is_list($values)) {
-        $values = array($values);
+    if (!array_is_list($values)) {
+        $values = [$values];
         $xml[$database] = $values;
     }
 
     foreach ($values as $line) {
         foreach ($line as $column => $value) {
-            $all_columns[$database][$column] = True;
+            $all_columns[$database][$column] = true;
         }
     }
 }
 
 foreach ($all_columns as $database => $columns) {
     $columns = array_keys($columns);
-    print($database . str_repeat(',', count($columns))."\n");
-    print(',"'. implode('","', $columns).'"'."\n");
+    print $database . str_repeat(',', count($columns)) . "\n";
+    print ',"' . implode('","', $columns) . '"' . "\n";
 
     foreach ($xml[$database] as $line) {
         $values = [];
@@ -70,14 +70,13 @@ foreach ($all_columns as $database => $columns) {
 
             if (is_numeric($value)) {
                 $values[] = $value;
-            } elseif ($value === null){
+            } elseif ($value === null) {
                 $values[] = '';
             } else {
-                $values[] = '"'.$value.'"';
+                $values[] = '"' . $value . '"';
             }
         }
 
-        print(','.implode(',', $values)."\n");
+        print ',' . implode(',', $values) . "\n";
     }
-
 }
