@@ -20,6 +20,7 @@ use TYPO3\CMS\Core\Database\Schema\SchemaMigrator;
 use TYPO3\CMS\Core\Database\Schema\SqlReader;
 use TYPO3\CMS\Core\Information\Typo3Version;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3\TestingFramework\Core\BaseTestCase;
 use TYPO3\TestingFramework\Core\Exception;
 use TYPO3\TestingFramework\Core\Functional\Framework\DataHandling\Snapshot\DatabaseAccessor;
 use TYPO3\TestingFramework\Core\Functional\Framework\DataHandling\Snapshot\DatabaseSnapshot;
@@ -79,17 +80,6 @@ abstract class _abstractFunctionalTestCase extends FunctionalTestCase
                 $testbase->initializeTestDatabaseAndTruncateTables($dbPathSqlite, $dbPathSqliteEmpty);
             }
             $testbase->loadExtensionTables();
-
-            // **********************************************************************
-            // Custom code to import static content
-            // **********************************************************************
-            $schemaMigrationService = GeneralUtility::makeInstance(SchemaMigrator::class);
-            $sqlReader = GeneralUtility::makeInstance(SqlReader::class);
-            $sqlCode = $sqlReader->getTablesDefinitionString(true);
-
-            $insertStatements = $sqlReader->getInsertStatementArray($sqlCode);
-            $schemaMigrationService->importStaticData($insertStatements);
-            // **********************************************************************
         } else {
             DatabaseSnapshot::initialize(dirname($this->getInstancePath()) . '/functional-sqlite-dbs/', $this->identifier);
             $testbase->removeOldInstanceIfExists($this->instancePath);
@@ -251,6 +241,7 @@ abstract class _abstractFunctionalTestCase extends FunctionalTestCase
                 }
             }
         }
+        BaseTestCase::setUp();
     }
 
     /**
@@ -294,5 +285,18 @@ abstract class _abstractFunctionalTestCase extends FunctionalTestCase
                 $restoreCallback();
             }
         }
+    }
+
+    /**
+     * Import static content into database, if needed
+     */
+    protected function importStaticTablesDataIntoDatabase(): void
+    {
+        $schemaMigrationService = GeneralUtility::makeInstance(SchemaMigrator::class);
+        $sqlReader = GeneralUtility::makeInstance(SqlReader::class);
+        $sqlCode = $sqlReader->getTablesDefinitionString(true);
+
+        $insertStatements = $sqlReader->getInsertStatementArray($sqlCode);
+        $schemaMigrationService->importStaticData($insertStatements);
     }
 }

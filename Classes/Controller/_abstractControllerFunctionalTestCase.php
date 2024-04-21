@@ -16,6 +16,8 @@ namespace ScoutNet\TestingTools\Controller;
 
 use GuzzleHttp\Psr7\Uri;
 
+use TYPO3\CMS\Core\Database\Schema\SchemaMigrator;
+use TYPO3\CMS\Core\Database\Schema\SqlReader;
 use function ini_get;
 
 use JsonException;
