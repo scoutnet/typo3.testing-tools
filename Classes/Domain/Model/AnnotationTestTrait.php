@@ -124,15 +124,20 @@ trait AnnotationTestTrait
             //                $this->fail('Config not set for ' . $prop->getName());
             //            }
 
-            // get type
-            $type = null;
+            // extract Types
+            $all_types = [];
             if (preg_match('/@var\s+(\S+)/', $prop->getDocComment(), $matches)) {
-                $type = $matches[1];
-
-                if (preg_match('/(\S+)<\S+>/', $prop->getDocComment(), $matches)) {
-                    $type = $matches[1];
+                foreach (explode('|', $matches[1]) as $type) {
+                    if (preg_match('/(\S+)<[^>]+>/', $type, $matches)) {
+                        $all_types[] = $matches[1];
+                    } else {
+                        $all_types[] = $type;
+                    }
                 }
             }
+
+            // add namespace from use statements
+            $all_types = array_map(static function ($class) use ($use_statements, $o) {return $use_statements[$class] ?? (str_contains($class, '\\') ? $class : $o->getNamespaceName() . '\\' . $class);}, $all_types);
 
             // TODO: check SQL statements
 
@@ -141,11 +146,6 @@ trait AnnotationTestTrait
                 if ($annotation instanceof Lazy) {
                     // Lazy objects should not leak outside the object
 
-                    $all_types = explode('|', $type);
-
-                    // add namespace from use statements
-                    $all_types = array_map(static function ($class) use ($use_statements, $o) {return $use_statements[$class] ?? (str_contains($class, '\\') ? $class : $o->getNamespaceName() . '\\' . $class);}, $all_types);
-
                     // check, that all types exists
                     foreach ($all_types as $class) {
                         if (!class_exists($class)) {
@@ -153,11 +153,20 @@ trait AnnotationTestTrait
                         }
                     }
 
+                    self::assertContains(LazyLoadingProxy::class, $all_types, $prop->getName() . ': Needs to hold LazyLoadingProxy');
+
+                    // make sure, one is LazyLoadingProxy and remove it from types
+                    $all_types = array_filter($all_types, function ($v) {return $v !== LazyLoadingProxy::class;});
+
                     if (count($all_types) !== 1) {
-                        $this->fail($prop->getName() . ': Needs to hold only one Type but has ' . count($all_types) . ' types!');
+                        $this->fail(
+                            $prop->getName() . ': Needs to hold only one Type next to LazyLoadingProxy but has ' . count(
+                                $all_types
+                            ) . ' types!'
+                        );
                     }
 
-                    // has only one object
+                    // has only one object Left
                     $type = $all_types[0];
 
                     // generate expected return value
