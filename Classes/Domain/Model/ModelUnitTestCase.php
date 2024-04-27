@@ -103,6 +103,7 @@ abstract class ModelUnitTestCase extends UnitTestCase
                     $a = new ReflectionProperty($this->subject, $attribute);
                     $ret_type = $this->getDocComment($a->getDocComment(), '@var');
                     $nullable = false;
+                    $lazy = false;
                     $sub_type = null;
 
                     // sort and remove null
@@ -111,6 +112,10 @@ abstract class ModelUnitTestCase extends UnitTestCase
                         if (($key = array_search('null', $ret_type)) !== false) {
                             unset($ret_type[$key]);
                             $nullable = true;
+                        }
+                        if (($key = array_search('LazyLoadingProxy', $ret_type)) !== false) {
+                            unset($ret_type[$key]);
+                            $lazy = true;
                         }
                         sort($ret_type);
                         $ret_type = implode('|', $ret_type);
