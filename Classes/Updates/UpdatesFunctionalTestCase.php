@@ -12,7 +12,7 @@
  ************************************************************************
  */
 
-namespace ScoutNet\TestingTools\Command;
+namespace ScoutNet\TestingTools\Updates;
 
 use ScoutNet\TestingTools\_abstractFunctionalTestCase;
 use ScoutNet\TestingTools\Fixtures\TestMboxTransport;
