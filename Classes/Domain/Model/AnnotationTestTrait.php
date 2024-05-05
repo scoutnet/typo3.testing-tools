@@ -167,7 +167,7 @@ trait AnnotationTestTrait
                     }
 
                     // has only one object Left
-                    $type = $all_types[0];
+                    $type = array_shift($all_types);
 
                     // generate expected return value
                     $value = new $type();
