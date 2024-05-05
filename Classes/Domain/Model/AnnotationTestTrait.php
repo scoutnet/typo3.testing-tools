@@ -97,7 +97,9 @@ trait AnnotationTestTrait
         }
 
         // start checking Annotations
-        $use_statements = [];
+        $use_statements = [
+            'null' => 'null',
+        ];
         // add parent use Statements as well (for Overrides)
         if ($p = get_parent_class($this->testedClass)) {
             $use_statements += $this->get_use_statements_from_class(new ReflectionClass($p));
@@ -146,8 +148,14 @@ trait AnnotationTestTrait
                 if ($annotation instanceof Lazy) {
                     // Lazy objects should not leak outside the object
 
+                    $nullable = false;
                     // check, that all types exists
                     foreach ($all_types as $class) {
+                        if ($class === 'null') {
+                            $nullable = true;
+                            continue;
+                        }
+
                         if (!class_exists($class)) {
                             $this->fail('Class ' . $class . ' does not exists');
                         }
@@ -156,7 +164,7 @@ trait AnnotationTestTrait
                     self::assertContains(LazyLoadingProxy::class, $all_types, $prop->getName() . ': Needs to hold LazyLoadingProxy');
 
                     // make sure, one is LazyLoadingProxy and remove it from types
-                    $all_types = array_filter($all_types, function ($v) {return $v !== LazyLoadingProxy::class;});
+                    $all_types = array_filter($all_types, function ($v) {return $v !== LazyLoadingProxy::class && $v !== 'null';});
 
                     if (count($all_types) !== 1) {
                         $this->fail(
@@ -213,7 +221,7 @@ trait AnnotationTestTrait
                         $this->assertStringContainsStringIgnoringCase('domainname', $tableConfig['config']['eval'] ?? '', $prop->getName() . ' needs to be domainname.');
                     } elseif ($annotation->validator === 'Float') {
                         // TODO: find the correct validation here!!
-                    } elseif ($annotation->validator == 'EmailAddress') {
+                    } elseif ($annotation->validator === 'EmailAddress') {
                         $this->assertStringContainsStringIgnoringCase('email', $tableConfig['config']['eval'] ?? '', $prop->getName() . ' needs to be email.');
                     } elseif ($annotation->validator === 'NumberRange') {
                         $min = $annotation->options['minimum'] ?? null;
@@ -249,14 +257,12 @@ trait AnnotationTestTrait
                         } else {
                             // TODO: check that this is not empty for other items
                             print 'unhandled NotEmpty for type ' . $tableConfig['config']['type'] . "\n";
-                            /** @noinspection ForgottenDebugOutputInspection */
                             var_dump($tableConfig);
                         }
                     } else {
                         // ignore custom ScoutNet validators
                         if (!str_starts_with($annotation->validator, '\\ScoutNet\\')) {
                             print 'unhandled Validator' . "\n";
-                            /** @noinspection ForgottenDebugOutputInspection */
                             var_dump($annotation);
                         }
                     }
@@ -268,7 +274,6 @@ trait AnnotationTestTrait
                 } else {
                     // TODO: break for unknown annotations
                     print 'unknown annotation' . "\n";
-                    /** @noinspection ForgottenDebugOutputInspection */
                     var_dump($annotation);
                 }
             }
