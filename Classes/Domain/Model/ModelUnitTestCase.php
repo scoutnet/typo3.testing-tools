@@ -88,14 +88,17 @@ abstract class ModelUnitTestCase extends UnitTestCase
         }
 
         foreach (get_class_methods(get_class($this->subject)) as $method) {
-            $type = substr($method, 0, 3);
-            $attribute = lcfirst(substr($method, 3));
+            $attribute = lcfirst(substr($method, str_starts_with($method, 'is') ? 2 : 3));
             $setter = 'set' . ucfirst($attribute);
-            $getter = 'get' . ucfirst($attribute);
+
+            if (str_starts_with($method, 'get') || str_starts_with($method, 'is') || str_starts_with($method, 'has')) {
+                $getter = $method;
+            } else {
+                continue;
+            }
 
             // only test, if getter and setter exists and local testClass does not implement this test
             if (
-                $type === 'get' &&
                 method_exists($this->subject, $setter) &&
                 !method_exists($this, 'test' . ucfirst($attribute))
             ) {
@@ -287,7 +290,7 @@ abstract class ModelUnitTestCase extends UnitTestCase
                             self::assertEquals($testDate, $this->subject->$getter());
                             break;
                     }
-                } catch (ReflectionException $exception) {
+                } catch (ReflectionException) {
                     // ignore attribute
                 }
             }
