@@ -209,6 +209,24 @@ abstract class ModelUnitTestCase extends UnitTestCase
                             $add = 'add' . ucfirst($attribute);
                             $remove = 'remove' . ucfirst($attribute);
 
+                            // remove s at end
+                            if (!$method_exists($this->subject, $add)) {
+                                $add = substr($add, 0, len($add) - 1);
+                            }
+
+                            // remove s at end
+                            if (!$method_exists($this->subject, $remove)) {
+                                $remove = substr($remove, 0, len($remove) - 1);
+                            }
+
+                            if (!$method_exists($this->subject, $add)) {
+                                self::fail('there is no add' . ucfirst($attribute) . ' or ' . $add . ' function!');
+                            }
+
+                            if (!$method_exists($this->subject, $remove)) {
+                                self::fail('there is no remove' . ucfirst($attribute) . ' or ' . $remove . ' function!');
+                            }
+
                             try {
                                 // check if only objectStorag are allowed
                                 $this->subject->$setter('test');
