@@ -4,6 +4,7 @@ namespace ScoutNet\TestingTools\Domain\Model;
 
 use DateTime;
 use Doctrine\Common\Annotations\AnnotationReader;
+use Doctrine\Inflector\InflectorFactory;
 use Prophecy\PhpUnit\ProphecyTrait;
 use ReflectionClass;
 use ReflectionException;
@@ -209,14 +210,17 @@ abstract class ModelUnitTestCase extends UnitTestCase
                             $add = 'add' . ucfirst($attribute);
                             $remove = 'remove' . ucfirst($attribute);
 
-                            // remove s at end
+                            $inflector = InflectorFactory::create()->build();
+                            $singular_attr =  $inflector->singularize($attribute);
+
+                            // if methods do net exists, test for singular
+                            // TODO: make singular mandatory
                             if (!method_exists($this->subject, $add)) {
-                                $add = mb_substr($add, 0, -1);
+                                $add = 'add' . ucfirst($singular_attr);
                             }
 
-                            // remove s at end
                             if (!method_exists($this->subject, $remove)) {
-                                $remove = mb_substr($remove, 0, -1);
+                                $remove = 'remove' . ucfirst($singular_attr);
                             }
 
                             if (!method_exists($this->subject, $add)) {
