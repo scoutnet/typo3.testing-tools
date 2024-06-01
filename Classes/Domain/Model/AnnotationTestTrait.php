@@ -116,6 +116,11 @@ trait AnnotationTestTrait
         }
 
         foreach ($o->getProperties() as $prop) {
+            // ignore parent properties
+            if ($prop->getDeclaringClass()->name !== $this->testedClass) {
+                continue;
+            }
+
             // TODO: maybe use Typo3 to check those
             // if we redefined the column name use this
             $tableColumnName = $table_properties[$prop->getName()]['fieldName'] ?? GeneralUtility::camelCaseToLowerCaseUnderscored($prop->getName());
