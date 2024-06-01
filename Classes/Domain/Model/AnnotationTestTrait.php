@@ -22,6 +22,7 @@ use TYPO3\CMS\Extbase\Annotation\ORM\Lazy;
 use TYPO3\CMS\Extbase\Annotation\ORM\Transient;
 use TYPO3\CMS\Extbase\Annotation\Validate;
 use TYPO3\CMS\Extbase\Persistence\Generic\LazyLoadingProxy;
+use TYPO3\CMS\Extbase\Persistence\ObjectStorage;
 
 /**
  * Annotation Test for class specified in testedClass Parameter
@@ -149,6 +150,7 @@ trait AnnotationTestTrait
                     // Lazy objects should not leak outside the object
 
                     $nullable = false;
+                    $objectStorage = false;
                     // check, that all types exists
                     foreach ($all_types as $class) {
                         if ($class === 'null') {
@@ -156,9 +158,18 @@ trait AnnotationTestTrait
                             continue;
                         }
 
+                        if ($class === ObjectStorage::class) {
+                            $objectStorage = true;
+                        }
+
                         if (!class_exists($class)) {
                             $this->fail('Class ' . $class . ' does not exists');
                         }
+                    }
+
+                    if ($objectStorage) {
+                        // do not test anything, since this will utilize LazyObjectStorage and not LazyLoadingProxy
+                        continue;
                     }
 
                     self::assertContains(LazyLoadingProxy::class, $all_types, $prop->getName() . ': Needs to hold LazyLoadingProxy');
